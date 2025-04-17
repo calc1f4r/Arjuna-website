@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -170,6 +171,37 @@
     animation-direction: reverse;
   }
 
+  .aurora-stars {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+
+  .aurora-star {
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    animation: aurora-twinkle 3s infinite ease-in-out;
+  }
+
+  .aurora-particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+  }
+
+  .aurora-particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background-color: rgba(155, 135, 245, 0.6);
+    border-radius: 50%;
+    filter: blur(1px);
+    animation: aurora-float 15s infinite ease-in-out;
+  }
+
   @keyframes aurora-rotate {
     from {
       transform: rotate(0deg);
@@ -177,6 +209,48 @@
     to {
       transform: rotate(360deg);
     }
+  }
+
+  @keyframes aurora-twinkle {
+    0%, 100% {
+      opacity: 0.2;
+      transform: scale(0.8);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.2);
+    }
+  }
+
+  @keyframes aurora-float {
+    0% {
+      transform: translateY(0) translateX(0);
+      opacity: 0;
+    }
+    50% {
+      opacity: 0.8;
+    }
+    100% {
+      transform: translateY(-100px) translateX(20px);
+      opacity: 0;
+    }
+  }
+
+  @keyframes gradient-flow {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  .animate-gradient-flow {
+    background-size: 200% 200%;
+    animation: gradient-flow 3s ease infinite;
   }
 
   pre code {
