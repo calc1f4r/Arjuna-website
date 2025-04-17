@@ -7,14 +7,14 @@ const Footer: React.FC = () => {
   return (
     <footer className="bg-black/50 border-t border-border mt-20">
       <div className="container px-4 py-12 mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="space-y-4">
             <Link to="/" className="flex items-center space-x-2">
               <Logo className="h-8 w-8" />
               <span className="text-xl font-bold text-gradient">Arjuna</span>
             </Link>
             <p className="text-sm text-stone-500">
-              Leading security and auditing services for Solana and Rust applications.
+              Leading security and auditing services for Solana and Rust Based contracts.
             </p>
             <div className="flex space-x-4">
               <a href="https://x.com/arjuna_sec" target="_blank" rel="noopener noreferrer" className="text-stone-500 hover:text-primary">
@@ -29,28 +29,13 @@ const Footer: React.FC = () => {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wider mb-4 text-stone-400">Services</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link to="/audits" className="text-stone-500 hover:text-primary text-sm">Smart Contract Audits</Link>
-              </li>
-              <li>
-                <Link to="/audits" className="text-stone-500 hover:text-primary text-sm">Rust Security Analysis</Link>
-              </li>
-              <li>
-                <Link to="/audits" className="text-stone-500 hover:text-primary text-sm">Solana Program Reviews</Link>
-              </li>
-            </ul>
-          </div>
-
-          <div>
             <h3 className="text-sm font-semibold uppercase tracking-wider mb-4 text-stone-400">Resources</h3>
             <ul className="space-y-2">
               <li>
                 <Link to="/blog" className="text-stone-500 hover:text-primary text-sm">Blog</Link>
               </li>
               <li>
-                <Link to="/audits" className="text-stone-500 hover:text-primary text-sm">Audit Reports</Link>
+                <Link to="https://github.com/ArjunaSec/Audits" className="text-stone-500 hover:text-primary text-sm">Audit Reports</Link>
               </li>
             </ul>
           </div>
@@ -59,10 +44,10 @@ const Footer: React.FC = () => {
             <h3 className="text-sm font-semibold uppercase tracking-wider mb-4 text-stone-400">Company</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/" className="text-stone-500 hover:text-primary text-sm">About Us</Link>
+                <a href="https://github.com/ArjunaSec/Audits" target="_blank" rel="noopener noreferrer" className="text-stone-500 hover:text-primary text-sm">About Us</a>
               </li>
               <li>
-                <Link to="https://t.me/calc1f4r" className="text-stone-500 hover:text-primary text-sm">Contact</Link>
+                <a href="https://t.me/calc1f4r" target="_blank" rel="noopener noreferrer" className="text-stone-500 hover:text-primary text-sm">Contact</a>
               </li>
             </ul>
           </div>
@@ -70,7 +55,7 @@ const Footer: React.FC = () => {
 
         <div className="mt-12 pt-6 border-t border-border flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm text-stone-600">
-            &copy; {new Date().getFullYear()} Arjuna.  All rights reserved.
+            &copy; {new Date().getFullYear()} Arjuna. All rights reserved.
           </p>
         </div>
       </div>
