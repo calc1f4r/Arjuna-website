@@ -1,76 +1,41 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { cn } from '@/lib/utils';
 
-import React from "react";
-import { cn } from "@/lib/utils";
-
-export const MovingBorder = ({
-  children,
-  duration = 2000,
-  className,
-  borderClassName,
-  as: Component = "div",
-  containerClassName,
-  size = 400,
-  backgroundColor = "transparent"
-}: {
-  children?: React.ReactNode;
-  duration?: number;
+interface MovingBorderProps {
+  children: React.ReactNode;
   className?: string;
-  borderClassName?: string;
-  as?: any;
-  containerClassName?: string;
-  size?: number;
-  backgroundColor?: string;
-}) => {
+  duration?: number;
+}
+
+const MovingBorder: React.FC<MovingBorderProps> = ({ children, className, duration = 4000 }) => {
+  const [x, setX] = useState(0);
+  const requestRef = useRef<number>();
+
+  useEffect(() => {
+    const animate = () => {
+      setX(x => x + 1);
+      requestRef.current = requestAnimationFrame(animate);
+    };
+
+    requestRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(requestRef.current as number);
+  }, []);
+
+  const gradientTransform = `translateX(${x}px)`;
+
   return (
-    <Component
-      className={cn(
-        "relative overflow-hidden",
-        containerClassName
-      )}
-      style={{
-        background: backgroundColor,
-      }}
-    >
+    <div className={cn("relative rounded-lg p-px overflow-hidden", className)}>
       <div
-        className={cn(
-          "absolute inset-0 h-full w-full",
-          borderClassName
-        )}
+        className="absolute inset-0 bg-gradient-to-r from-primary to-accent [mask-image:linear-gradient(to_right,white_0%,black_50%,white_100%)]"
         style={{
-          background: `
-            conic-gradient(
-              from 0deg at 50% 50%,
-              hsl(var(--primary)) 0%,
-              hsl(var(--accent)) 25%,
-              hsl(var(--primary)) 50%,
-              hsl(var(--accent)) 75%,
-              hsl(var(--primary)) 100%
-            )
-          `,
-          borderRadius: "inherit",
-          animation: `spin ${duration}ms linear infinite`,
+          transform: gradientTransform,
+          animation: `scroll ${duration}ms linear infinite`,
         }}
       />
-      <div
-        className={cn(
-          "relative z-10 bg-background rounded-[inherit]",
-          className
-        )}
-      >
+      <div className="relative bg-background rounded-lg">
         {children}
       </div>
-      
-      <style jsx global>{`
-        @keyframes spin {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
-        }
-      `}</style>
-    </Component>
+    </div>
   );
 };
 

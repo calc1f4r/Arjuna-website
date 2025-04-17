@@ -3,8 +3,10 @@ import React from 'react';
 import GridBackgroundDemo from '@/components/ui/aceternity/GridBackgroundDemo';
 import { Button } from '@/components/ui/button';
 import { Search, Tag, CalendarDays, Clock, User } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const featuredPost = {
+  id: 1,
   title: "Exploiting Vulnerabilities in Solana Smart Contracts",
   excerpt: "An in-depth analysis of common security flaws in Solana programs and best practices for prevention.",
   coverImage: "bg-gradient-to-br from-primary/30 to-accent/30",
@@ -16,7 +18,7 @@ const featuredPost = {
 
 const blogPosts = [
   {
-    id: 1,
+    id: 2,
     title: "Best Practices for Securing Rust Applications",
     excerpt: "Learn essential techniques for writing secure Rust code for blockchain applications.",
     coverImage: "bg-gradient-to-r from-blue-500/20 to-purple-500/20",
@@ -26,7 +28,7 @@ const blogPosts = [
     tags: ["Rust", "Security"]
   },
   {
-    id: 2,
+    id: 3,
     title: "Understanding Solana's Programming Model",
     excerpt: "A deep dive into Solana's unique approach to smart contract development and execution.",
     coverImage: "bg-gradient-to-r from-green-500/20 to-blue-500/20",
@@ -106,45 +108,47 @@ const Blog = () => {
         <div className="container px-4 mx-auto">
           <h2 className="text-2xl font-bold mb-6">Featured Article</h2>
           
-          <div className="glass-card rounded-xl overflow-hidden transition-all hover:scale-[1.01] hover:bg-secondary/30 cursor-pointer">
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-              <div className={`col-span-2 ${featuredPost.coverImage} h-full min-h-[200px] md:min-h-[300px]`} />
-              <div className="col-span-3 p-6">
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {featuredPost.tags.map(tag => (
-                    <span key={tag} className="text-xs px-2 py-1 rounded-full bg-primary/20 text-primary">
-                      {tag}
-                    </span>
-                  ))}
+          <Link to={`/blog/${featuredPost.id}`} className="block">
+            <div className="glass-card rounded-xl overflow-hidden transition-all hover:scale-[1.01] hover:bg-secondary/30 cursor-pointer">
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+                <div className={`col-span-2 ${featuredPost.coverImage} h-full min-h-[200px] md:min-h-[300px]`} />
+                <div className="col-span-3 p-6">
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {featuredPost.tags.map(tag => (
+                      <span key={tag} className="text-xs px-2 py-1 rounded-full bg-primary/20 text-primary">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  
+                  <h3 className="text-2xl md:text-3xl font-bold mb-3">
+                    {featuredPost.title}
+                  </h3>
+                  
+                  <p className="text-muted-foreground mb-5">
+                    {featuredPost.excerpt}
+                  </p>
+                  
+                  <div className="flex flex-wrap items-center text-sm text-muted-foreground mb-6 gap-4">
+                    <div className="flex items-center">
+                      <User className="h-4 w-4 mr-1" />
+                      {featuredPost.author}
+                    </div>
+                    <div className="flex items-center">
+                      <CalendarDays className="h-4 w-4 mr-1" />
+                      {featuredPost.date}
+                    </div>
+                    <div className="flex items-center">
+                      <Clock className="h-4 w-4 mr-1" />
+                      {featuredPost.readTime}
+                    </div>
+                  </div>
+                  
+                  <Button>Read Article</Button>
                 </div>
-                
-                <h3 className="text-2xl md:text-3xl font-bold mb-3">
-                  {featuredPost.title}
-                </h3>
-                
-                <p className="text-muted-foreground mb-5">
-                  {featuredPost.excerpt}
-                </p>
-                
-                <div className="flex flex-wrap items-center text-sm text-muted-foreground mb-6 gap-4">
-                  <div className="flex items-center">
-                    <User className="h-4 w-4 mr-1" />
-                    {featuredPost.author}
-                  </div>
-                  <div className="flex items-center">
-                    <CalendarDays className="h-4 w-4 mr-1" />
-                    {featuredPost.date}
-                  </div>
-                  <div className="flex items-center">
-                    <Clock className="h-4 w-4 mr-1" />
-                    {featuredPost.readTime}
-                  </div>
-                </div>
-                
-                <Button>Read Article</Button>
               </div>
             </div>
-          </div>
+          </Link>
         </div>
       </section>
 
@@ -164,40 +168,43 @@ const Blog = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {blogPosts.map((post) => (
-              <div 
+              <Link 
                 key={post.id} 
-                className="glass-card rounded-xl overflow-hidden transition-all hover:scale-[1.02] hover:bg-secondary/30 cursor-pointer"
+                to={`/blog/${post.id}`}
+                className="block"
               >
-                <div className={`h-48 ${post.coverImage}`} />
-                <div className="p-5">
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {post.tags.map(tag => (
-                      <span key={`${post.id}-${tag}`} className="text-xs px-2 py-1 rounded-full bg-primary/20 text-primary">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                  
-                  <h3 className="text-xl font-semibold mb-3">
-                    {post.title}
-                  </h3>
-                  
-                  <p className="text-muted-foreground mb-5 text-sm">
-                    {post.excerpt}
-                  </p>
-                  
-                  <div className="flex justify-between items-center text-xs text-muted-foreground">
-                    <div className="flex items-center">
-                      <User className="h-3 w-3 mr-1" />
-                      {post.author}
+                <div className="glass-card rounded-xl overflow-hidden transition-all hover:scale-[1.02] hover:bg-secondary/30 cursor-pointer h-full">
+                  <div className={`h-48 ${post.coverImage}`} />
+                  <div className="p-5">
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {post.tags.map(tag => (
+                        <span key={`${post.id}-${tag}`} className="text-xs px-2 py-1 rounded-full bg-primary/20 text-primary">
+                          {tag}
+                        </span>
+                      ))}
                     </div>
-                    <div className="flex items-center">
-                      <Clock className="h-3 w-3 mr-1" />
-                      {post.readTime}
+                    
+                    <h3 className="text-xl font-semibold mb-3">
+                      {post.title}
+                    </h3>
+                    
+                    <p className="text-muted-foreground mb-5 text-sm">
+                      {post.excerpt}
+                    </p>
+                    
+                    <div className="flex justify-between items-center text-xs text-muted-foreground">
+                      <div className="flex items-center">
+                        <User className="h-3 w-3 mr-1" />
+                        {post.author}
+                      </div>
+                      <div className="flex items-center">
+                        <Clock className="h-3 w-3 mr-1" />
+                        {post.readTime}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
 
