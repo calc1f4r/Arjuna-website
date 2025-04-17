@@ -1,29 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import Prism from 'prismjs'; // Import Prism
+import React, { useState, useEffect } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import Prism from "prismjs"; // Import Prism
 // Ensure languages are loaded (can be done in a central place like main.tsx or here)
-import 'prismjs/components/prism-rust';
-import 'prismjs/components/prism-javascript';
-import 'prismjs/components/prism-typescript';
-import 'prismjs/components/prism-jsx';
-import 'prismjs/components/prism-tsx';
-import 'prismjs/components/prism-css';
-import 'prismjs/components/prism-scss';
-import 'prismjs/components/prism-solidity';
-import 'prismjs/components/prism-bash';
-import 'prismjs/components/prism-json';
-import 'prismjs/components/prism-markdown';
-import 'prismjs/components/prism-yaml';
-import 'prismjs/components/prism-python';
+import "prismjs/components/prism-rust";
+import "prismjs/components/prism-javascript";
+import "prismjs/components/prism-typescript";
+import "prismjs/components/prism-jsx";
+import "prismjs/components/prism-tsx";
+import "prismjs/components/prism-css";
+import "prismjs/components/prism-scss";
+import "prismjs/components/prism-solidity";
+import "prismjs/components/prism-bash";
+import "prismjs/components/prism-json";
+import "prismjs/components/prism-markdown";
+import "prismjs/components/prism-yaml";
+import "prismjs/components/prism-python";
 // Import the Prism CSS theme (already done in main.tsx, but good to be aware)
 // import 'prismjs/themes/prism-tomorrow.css'; // Or your preferred theme
 
-import postsData from '@/data/blog/posts.json';
-import { Button } from '@/components/ui/button';
-import { CalendarDays, Clock, User, ArrowLeft } from 'lucide-react';
-import NotFound from './NotFound'; // Import NotFound component
+import postsData from "@/data/blog/posts.json";
+import { Button } from "@/components/ui/button";
+import { CalendarDays, Clock, User, ArrowLeft } from "lucide-react";
+import NotFound from "./NotFound"; // Import NotFound component
 
 // Define the type for a blog post (can be shared)
 interface BlogPostData {
@@ -44,18 +44,20 @@ const BlogPost = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [post, setPost] = useState<BlogPostData | null | undefined>(undefined); // undefined initially, null if not found
-  const [markdownContent, setMarkdownContent] = useState<string>('');
+  const [markdownContent, setMarkdownContent] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setIsLoading(true);
     setError(null);
-    setMarkdownContent('');
+    setMarkdownContent("");
 
     // Find the post metadata
-    const foundPost = postsData.find((p) => p.id === id) as BlogPostData | undefined;
-    
+    const foundPost = postsData.find((p) => p.id === id) as
+      | BlogPostData
+      | undefined;
+
     if (foundPost) {
       setPost(foundPost);
       // Fetch the markdown content
@@ -77,7 +79,7 @@ const BlogPost = () => {
         })
         .catch((e) => {
           console.error("Error fetching markdown content:", e);
-          setError('Failed to load article content.');
+          setError("Failed to load article content.");
           setIsLoading(false);
         });
     } else {
@@ -89,10 +91,10 @@ const BlogPost = () => {
   // Function to format date (optional, same as in Blog.tsx)
   const formatDate = (dateString: string) => {
     try {
-      return new Date(dateString).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
+      return new Date(dateString).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
       });
     } catch (e) {
       return dateString;
@@ -100,36 +102,55 @@ const BlogPost = () => {
   };
 
   if (isLoading) {
-    return <div className="container mx-auto px-4 py-12 text-center">Loading article...</div>; // Add a loading state
+    return (
+      <div className="container mx-auto px-4 py-12 text-center">
+        Loading article...
+      </div>
+    ); // Add a loading state
   }
 
   if (post === null) {
     // If post is explicitly null (not found), render NotFound
     return <NotFound />;
   }
-  
+
   // If post is still undefined (shouldn't happen often with the logic, but safe check)
   if (!post) {
-     return <div className="container mx-auto px-4 py-12 text-center">Article not available.</div>;
+    return (
+      <div className="container mx-auto px-4 py-12 text-center">
+        Article not available.
+      </div>
+    );
   }
 
   // Custom component for rendering code blocks with Prism highlighting
   const CodeBlock = ({ node, inline, className, children, ...props }: any) => {
-    const match = /language-(\w+)/.exec(className || '');
-    const lang = match ? match[1] : 'markup'; // Default to markup if no language specified
+    const match = /language-(\w+)/.exec(className || "");
+    const lang = match ? match[1] : "markup"; // Default to markup if no language specified
 
     // For inline code, just render it simply
     if (inline) {
-      return <code className={className} {...props}>{children}</code>;
+      return (
+        <code className={className} {...props}>
+          {children}
+        </code>
+      );
     }
 
     // For block code, apply Prism highlighting
-    const code = String(children).replace(/\n$/, ''); // Get the code content
-    const html = Prism.highlight(code, Prism.languages[lang] || Prism.languages.markup, lang);
+    const code = String(children).replace(/\n$/, ""); // Get the code content
+    const html = Prism.highlight(
+      code,
+      Prism.languages[lang] || Prism.languages.markup,
+      lang,
+    );
 
     return (
       <pre className={`language-${lang}`}>
-        <code className={`language-${lang}`} dangerouslySetInnerHTML={{ __html: html }} />
+        <code
+          className={`language-${lang}`}
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
       </pre>
     );
   };
@@ -137,9 +158,9 @@ const BlogPost = () => {
   return (
     <div className="container mx-auto px-4 py-12 max-w-4xl">
       {/* Back Button */}
-      <Button 
-        variant="ghost" 
-        onClick={() => navigate('/blog')} 
+      <Button
+        variant="ghost"
+        onClick={() => navigate("/blog")}
         className="mb-8 text-muted-foreground hover:text-primary"
       >
         <ArrowLeft className="h-4 w-4 mr-2" />
@@ -164,8 +185,11 @@ const BlogPost = () => {
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          {post.tags.map(tag => (
-            <span key={tag} className="text-xs px-2.5 py-1 rounded-full bg-primary/10 text-primary">
+          {post.tags.map((tag) => (
+            <span
+              key={tag}
+              className="text-xs px-2.5 py-1 rounded-full bg-primary/10 text-primary"
+            >
               {tag}
             </span>
           ))}
@@ -175,7 +199,11 @@ const BlogPost = () => {
       {/* Cover Image (Optional) */}
       {post.coverImage && (
         <div className="mb-10 rounded-lg overflow-hidden">
-          <img src={post.coverImage} alt={`${post.title} cover`} className="w-full h-auto object-cover" />
+          <img
+            src={post.coverImage}
+            alt={`${post.title} cover`}
+            className="w-full h-auto object-cover"
+          />
         </div>
       )}
 
@@ -196,7 +224,6 @@ const BlogPost = () => {
       </article>
 
       {/* Add other sections like Author bio, related posts etc. here later */}
-
     </div>
   );
 };

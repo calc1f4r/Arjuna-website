@@ -8,7 +8,9 @@ pre[class*="language-"],
 code[class*="language-"] {
   color: #e0e0e0;
   text-shadow: none;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
   direction: ltr;
   text-align: left;
   white-space: pre;
@@ -119,30 +121,30 @@ pre[class*="language-"] {
 }
 
 .language-rust .token.keyword {
-  color: #569CD6;
+  color: #569cd6;
 }
 
 .language-rust .token.function {
-  color: #DCDCAA;
+  color: #dcdcaa;
 }
 
 .language-rust .token.macro {
-  color: #C586C0;
+  color: #c586c0;
 }
 
 .language-rust .token.type-definition,
 .language-rust .token.type {
-  color: #4EC9B0;
+  color: #4ec9b0;
 }
 
 .language-javascript .token.keyword,
 .language-typescript .token.keyword {
-  color: #569CD6;
+  color: #569cd6;
 }
 
 .language-javascript .token.function,
 .language-typescript .token.function {
-  color: #DCDCAA;
+  color: #dcdcaa;
 }
 
 .language-javascript .token.template-string,
@@ -152,23 +154,23 @@ pre[class*="language-"] {
 
 .language-javascript .token.literal-property,
 .language-typescript .token.literal-property {
-  color: #9CDCFE;
+  color: #9cdcfe;
 }
 
 .language-solidity .token.keyword {
-  color: #569CD6;
+  color: #569cd6;
 }
 
 .language-solidity .token.function {
-  color: #DCDCAA;
+  color: #dcdcaa;
 }
 
 .language-bash .token.function {
-  color: #DCDCAA;
+  color: #dcdcaa;
 }
 
 .language-bash .token.parameter {
-  color: #9CDCFE;
+  color: #9cdcfe;
 }
 
 .language-bash .token.comment {
@@ -178,7 +180,7 @@ pre[class*="language-"] {
 /* Token color refinements */
 .token.property,
 .token.parameter {
-  color: #9CDCFE;
+  color: #9cdcfe;
 }
 
 .token.interpolation {
@@ -186,7 +188,7 @@ pre[class*="language-"] {
 }
 
 .token.interpolation-punctuation {
-  color: #569CD6;
+  color: #569cd6;
 }
 
 /* Line numbers */
@@ -224,4 +226,4 @@ pre[class*="language-"].line-numbers > code {
   display: block;
   padding-right: 0.8em;
   text-align: right;
-} 
+}

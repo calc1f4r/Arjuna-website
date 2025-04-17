@@ -1,7 +1,7 @@
-import React, { useEffect, useRef } from 'react';
-import { Check, Copy } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import Prism from '@/lib/prism';
+import React, { useEffect, useRef } from "react";
+import { Check, Copy } from "lucide-react";
+import { cn } from "@/lib/utils";
+import Prism from "@/lib/prism";
 
 interface CodeBlockProps {
   language: string;
@@ -34,18 +34,25 @@ const CodeBlock: React.FC<CodeBlockProps> = ({
   };
 
   const renderLineNumbers = () => {
-    const lines = code.split('\n');
+    const lines = code.split("\n");
     return (
       <div className="select-none text-right mr-5 text-muted-foreground/40 text-xs font-mono">
         {lines.map((_, i) => (
-          <div key={i} className="leading-relaxed">{i + 1}</div>
+          <div key={i} className="leading-relaxed">
+            {i + 1}
+          </div>
         ))}
       </div>
     );
   };
 
   return (
-    <div className={cn("rounded-lg overflow-hidden my-8 shadow-lg shadow-black/5 border border-border/20", className)}>
+    <div
+      className={cn(
+        "rounded-lg overflow-hidden my-8 shadow-lg shadow-black/5 border border-border/20",
+        className,
+      )}
+    >
       {fileName && (
         <div className="px-5 py-3 bg-secondary/60 border-b border-border/40 text-sm text-muted-foreground flex items-center justify-between">
           <div className="flex items-center">
@@ -59,11 +66,15 @@ const CodeBlock: React.FC<CodeBlockProps> = ({
             className="p-1.5 rounded hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground focus:outline-none focus:ring-1 focus:ring-primary/40"
             aria-label="Copy code"
           >
-            {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+            {copied ? (
+              <Check className="h-4 w-4" />
+            ) : (
+              <Copy className="h-4 w-4" />
+            )}
           </button>
         </div>
       )}
-      
+
       <div className="relative bg-secondary/40 backdrop-blur-sm">
         {!fileName && (
           <div className="absolute right-3 top-3 z-10">
@@ -72,16 +83,20 @@ const CodeBlock: React.FC<CodeBlockProps> = ({
               className="p-1.5 rounded-md bg-secondary/80 backdrop-blur-sm hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground focus:outline-none focus:ring-1 focus:ring-primary/40"
               aria-label="Copy code"
             >
-              {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+              {copied ? (
+                <Check className="h-4 w-4" />
+              ) : (
+                <Copy className="h-4 w-4" />
+              )}
             </button>
           </div>
         )}
-        
+
         <div className="p-5 pt-6 pb-5 overflow-x-auto font-mono text-sm flex">
           {showLineNumbers && renderLineNumbers()}
           <pre className={`flex-1 overflow-visible`}>
-            <code 
-              ref={codeRef} 
+            <code
+              ref={codeRef}
               className={`language-${language} leading-relaxed`}
             >
               {code}
@@ -93,4 +108,4 @@ const CodeBlock: React.FC<CodeBlockProps> = ({
   );
 };
 
-export default CodeBlock; 
+export default CodeBlock;

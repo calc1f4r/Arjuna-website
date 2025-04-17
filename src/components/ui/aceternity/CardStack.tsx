@@ -35,7 +35,7 @@ export const CardStack: React.FC<CardStackProps> = ({
     if (autoRotate) {
       startRotation();
     }
-    
+
     return () => {
       if (rotation) clearInterval(rotation);
     };
@@ -49,7 +49,7 @@ export const CardStack: React.FC<CardStackProps> = ({
         return newArray;
       });
     }, rotationInterval);
-    
+
     setRotation(interval);
   };
 
@@ -82,4 +82,4 @@ export const CardStack: React.FC<CardStackProps> = ({
   );
 };
 
-export default CardStack; 
+export default CardStack;

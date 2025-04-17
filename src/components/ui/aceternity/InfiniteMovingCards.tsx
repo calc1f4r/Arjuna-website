@@ -47,10 +47,7 @@ export const InfiniteMovingCards = ({
   };
 
   return (
-    <div
-      ref={containerRef}
-      className={`overflow-hidden relative ${className}`}
-    >
+    <div ref={containerRef} className={`overflow-hidden relative ${className}`}>
       <motion.div
         className="flex"
         style={{ width: containerWidth * 2 }}
@@ -86,7 +83,9 @@ export const InfiniteMovingCards = ({
                   <div className="mt-2">
                     <p className="font-medium">{item.name}</p>
                     {item.title && (
-                      <p className="text-muted-foreground text-xs">{item.title}</p>
+                      <p className="text-muted-foreground text-xs">
+                        {item.title}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -99,4 +98,4 @@ export const InfiniteMovingCards = ({
   );
 };
 
-export default InfiniteMovingCards; 
+export default InfiniteMovingCards;

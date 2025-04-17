@@ -1,15 +1,14 @@
-
-import React from 'react';
-import { cn } from '@/lib/utils';
+import React from "react";
+import { cn } from "@/lib/utils";
 
 interface NorthernLightsProps {
   className?: string;
   children?: React.ReactNode;
 }
 
-const NorthernLights: React.FC<NorthernLightsProps> = ({ 
+const NorthernLights: React.FC<NorthernLightsProps> = ({
   className,
-  children 
+  children,
 }) => {
   return (
     <div className={cn("relative overflow-hidden isolate", className)}>
@@ -20,11 +19,11 @@ const NorthernLights: React.FC<NorthernLightsProps> = ({
           <div className="aurora-2"></div>
           <div className="aurora-3"></div>
           <div className="aurora-4"></div>
-          
+
           {/* Additional animated elements */}
           <div className="aurora-stars">
             {Array.from({ length: 20 }).map((_, i) => (
-              <div 
+              <div
                 key={i}
                 className="aurora-star"
                 style={{
@@ -32,15 +31,15 @@ const NorthernLights: React.FC<NorthernLightsProps> = ({
                   left: `${Math.random() * 100}%`,
                   animationDelay: `${Math.random() * 3}s`,
                   width: `${Math.random() * 2 + 1}px`,
-                  height: `${Math.random() * 2 + 1}px`
+                  height: `${Math.random() * 2 + 1}px`,
                 }}
               />
             ))}
           </div>
-          
+
           <div className="aurora-particles">
             {Array.from({ length: 15 }).map((_, i) => (
-              <div 
+              <div
                 key={i}
                 className="aurora-particle"
                 style={{
@@ -54,7 +53,7 @@ const NorthernLights: React.FC<NorthernLightsProps> = ({
           </div>
         </div>
       </div>
-      
+
       {children}
     </div>
   );
