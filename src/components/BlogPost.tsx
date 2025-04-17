@@ -1,12 +1,11 @@
-
 import React from 'react';
 import { CalendarDays, Clock, User, Tag, ArrowLeft, Share2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import GlowingCard from './ui/aceternity/GlowingCard';
 import { Button } from './ui/button';
 import MovingBorder from './ui/aceternity/MovingBorder';
+import NorthernLights from './ui/aceternity/NorthernLights';
 
-// Define the blog post type
 export interface BlogPostType {
   id: number;
   title: string;
@@ -61,9 +60,11 @@ const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
       </div>
       
       {post.coverImage && (
-        <MovingBorder containerClassName="w-full mb-12 rounded-2xl overflow-hidden" className="p-0">
-          <div className={`w-full h-[300px] md:h-[400px] lg:h-[500px] ${post.coverImage} rounded-xl`} />
-        </MovingBorder>
+        <NorthernLights>
+          <MovingBorder containerClassName="w-full mb-12 rounded-2xl overflow-hidden" className="p-0">
+            <div className={`w-full h-[300px] md:h-[400px] lg:h-[500px] ${post.coverImage} rounded-xl`} />
+          </MovingBorder>
+        </NorthernLights>
       )}
       
       <article className="prose prose-invert max-w-none lg:prose-xl mb-16 prose-headings:text-gradient prose-headings:font-bold prose-p:text-foreground/90 prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-pre:bg-secondary/40 prose-pre:backdrop-blur-sm">
@@ -72,23 +73,25 @@ const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
       
       <div className="w-full h-px bg-gradient-to-r from-transparent via-border to-transparent my-16"></div>
       
-      <GlowingCard className="mb-16">
-        <div className="flex flex-col md:flex-row items-center gap-8 p-8">
-          <div className="flex-shrink-0 w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center">
-            <User className="h-10 w-10 text-primary" />
+      <NorthernLights>
+        <GlowingCard className="mb-16">
+          <div className="flex flex-col md:flex-row items-center gap-8 p-8">
+            <div className="flex-shrink-0 w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center">
+              <User className="h-10 w-10 text-primary" />
+            </div>
+            <div>
+              <h3 className="text-2xl font-semibold mb-3">About the author</h3>
+              <p className="text-muted-foreground mb-4 max-w-2xl">
+                {post.author} is a security researcher at Arjuna, specializing in Solana smart contract security with extensive experience identifying vulnerabilities in decentralized applications.
+              </p>
+              <Button variant="outline" size="sm" className="group">
+                <span>View profile</span>
+                <span className="inline-block transition-transform group-hover:translate-x-1 ml-1">→</span>
+              </Button>
+            </div>
           </div>
-          <div>
-            <h3 className="text-2xl font-semibold mb-3">About the author</h3>
-            <p className="text-muted-foreground mb-4 max-w-2xl">
-              {post.author} is a security researcher at Arjuna, specializing in Solana smart contract security with extensive experience identifying vulnerabilities in decentralized applications.
-            </p>
-            <Button variant="outline" size="sm" className="group">
-              <span>View profile</span>
-              <span className="inline-block transition-transform group-hover:translate-x-1 ml-1">→</span>
-            </Button>
-          </div>
-        </div>
-      </GlowingCard>
+        </GlowingCard>
+      </NorthernLights>
       
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h3 className="text-xl font-semibold">Share this article</h3>
