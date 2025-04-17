@@ -28,9 +28,11 @@ const Index = () => {
                 duration={3000} 
                 containerClassName="rounded-lg"
               >
+                <a href="https://t.me/calc1f4r" target="_blank" rel="noopener noreferrer">
                   <Button className="relative z-10 px-8 py-6 rounded-lg group">
-                    Request Audit <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    Request Quote <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </Button>
+                </a>
               </MovingBorder>
                 <a href="https://github.com/ArjunaSec/audits" target="_blank" rel="noopener noreferrer">
               <Button variant="outline" className="px-8 py-6 hover:scale-105 transition-transform">
@@ -170,7 +172,7 @@ const Index = () => {
               <p className="text-muted-foreground max-w-2xl mb-8 animate-fade-up [animation-delay:200ms]">
                 Get in touch with our team to discuss your security needs and how Arjuna can help protect your blockchain application.
               </p>
-              <a href="https://github.com/ArjunaSec/audits" target="_blank" rel="noopener noreferrer">
+              <a href="https://t.me/calc1f4r" target="_blank" rel="noopener noreferrer">
                 <Button className="px-8 py-6 text-lg group animate-fade-up [animation-delay:400ms] hover:bg-primary/90 transition-colors">
                   Request an Audit
                   <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />

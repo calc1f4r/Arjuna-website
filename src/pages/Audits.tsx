@@ -1,4 +1,3 @@
-
 import React from 'react';
 import GridBackgroundDemo from '@/components/ui/aceternity/GridBackgroundDemo';
 import { Button } from '@/components/ui/button';
@@ -114,7 +113,9 @@ const Audits = () => {
                   All audit reports include detailed vulnerability assessments and remediation recommendations
                 </span>
               </div>
-              <Button>Request an Audit</Button>
+              <a href="https://t.me/calc1f4r" target="_blank" rel="noopener noreferrer">
+                <Button>Request an Audit</Button>
+              </a>
             </div>
           </GlowingCard>
 
@@ -201,7 +202,9 @@ const Audits = () => {
           <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
             Contact our team to discuss your project needs and get a custom quote for our comprehensive audit services.
           </p>
-          <Button size="lg" className="px-8">Get in Touch</Button>
+          <a href="https://t.me/calc1f4r" target="_blank" rel="noopener noreferrer">
+            <Button size="lg" className="px-8">Get in Touch</Button>
+          </a>
         </div>
       </section>
     </div>
