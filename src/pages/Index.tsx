@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Shield, CheckCircle, Zap, ArrowRight, Users, FileCode, Code, Eye } from 'lucide-react';
 import GridBackgroundDemo from '@/components/ui/aceternity/GridBackgroundDemo';
@@ -6,8 +6,35 @@ import GlowingCard from '@/components/ui/aceternity/GlowingCard';
 import MovingBorder from '@/components/ui/aceternity/MovingBorder';
 import NorthernLights from '@/components/ui/aceternity/NorthernLights';
 import { Link } from 'react-router-dom';
+import postsData from '@/data/blog/posts.json'; // Import blog post data
+
+// Add a basic BlogPost type definition if you don't have one
+// You might want to place this in a separate types file (e.g., src/types.ts)
+export interface BlogPost {
+  id: string;
+  title: string;
+  excerpt: string;
+  contentPath: string;
+  coverImage?: string; // Make coverImage optional if not always present
+  date: string;
+  readTime: string;
+  author: string;
+  authorImage: string;
+  tags: string[];
+  featured: boolean;
+}
 
 const Index = () => {
+  const [latestPosts, setLatestPosts] = useState<BlogPost[]>([]);
+
+  useEffect(() => {
+    // Sort posts by date descending and take the first two
+    const sortedPosts = [...postsData]
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .slice(0, 2);
+    setLatestPosts(sortedPosts as BlogPost[]); // Cast to BlogPost[]
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Hero Section */}
@@ -199,45 +226,52 @@ const Index = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <Link to="/blog" className="animate-fade-up [animation-delay:400ms]">
-              <div className="glass-card rounded-xl overflow-hidden transition-all hover:scale-[1.02] hover:bg-secondary/30 duration-300">
-                <div className="h-48 bg-gradient-radial from-[rgba(255,13,104,0.16)] to-transparent relative overflow-hidden">
-                  <div className="aurora-container absolute inset-0 opacity-40"></div>
-                </div>
-                <div className="p-6">
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="text-xs px-2 py-1 rounded-full bg-primary/20 text-primary">Security</span>
-                    <span className="text-xs text-muted-foreground">June 2, 2023</span>
+            {latestPosts.map((post, index) => (
+              <Link 
+                to={`/blog/${post.id}`} 
+                key={post.id} 
+                className={`animate-fade-up [animation-delay:${400 + index * 200}ms]`}
+              >
+                <div className="glass-card rounded-xl overflow-hidden transition-all hover:scale-[1.02] hover:bg-secondary/30 duration-300 h-full flex flex-col">
+                  <div className="h-48 bg-gradient-radial from-[rgba(255,13,104,0.16)] to-transparent relative overflow-hidden">
+                    {/* Add cover image here if available */}
+                    {post.coverImage ? (
+                      <img 
+                        src={post.coverImage} 
+                        alt={post.title} 
+                        className="object-cover w-full h-full absolute inset-0 z-0" 
+                      />
+                    ) : (
+                      <div className="aurora-container absolute inset-0 opacity-40"></div>
+                    )}
+                    {/* Keep the gradient overlay on top if needed, or remove if image should be fully visible */}
+                    {/* <div className="aurora-container absolute inset-0 opacity-40 z-10"></div> */}
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">
-                    Common Vulnerabilities in Solana Smart Contracts
-                  </h3>
-                  <p className="text-muted-foreground">
-                    An overview of recurring security issues we've identified in Solana contracts and how to avoid them.
-                  </p>
-                </div>
-              </div>
-            </Link>
-            
-            <Link to="/blog" className="animate-fade-up [animation-delay:600ms]">
-              <div className="glass-card rounded-xl overflow-hidden transition-all hover:scale-[1.02] hover:bg-secondary/30 duration-300">
-                <div className="h-48 bg-gradient-radial from-[rgba(204,10,83,0.16)] to-transparent relative overflow-hidden">
-                  <div className="aurora-container absolute inset-0 opacity-40"></div>
-                </div>
-                <div className="p-6">
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="text-xs px-2 py-1 rounded-full bg-accent/20 text-accent">Rust</span>
-                    <span className="text-xs text-muted-foreground">May 24, 2023</span>
+                  <div className="p-6 flex flex-col flex-grow relative z-10 bg-card/80 backdrop-blur-sm">
+                    <div className="flex justify-between items-center mb-4">
+                      {post.tags && post.tags.length > 0 && (
+                        <span className={`text-xs px-2 py-1 rounded-full ${ 
+                          post.tags[0].toLowerCase() === 'security' ? 'bg-primary/20 text-primary' : 
+                          post.tags[0].toLowerCase() === 'rust' ? 'bg-accent/20 text-accent' : 
+                          'bg-secondary/20 text-secondary-foreground' // Default tag style
+                        }`}>
+                          {post.tags[0]} {/* Display first tag */}
+                        </span>
+                      )}
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                      </span>
+                    </div>
+                    <h3 className="text-xl font-semibold mb-2 flex-grow">
+                      {post.title}
+                    </h3>
+                    <p className="text-muted-foreground text-sm"> 
+                      {post.excerpt}
+                    </p>
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">
-                    Secure Coding Practices for Rust Blockchain Applications
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Best practices for writing secure Rust code in blockchain contexts to minimize security risks.
-                  </p>
                 </div>
-              </div>
-            </Link>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
