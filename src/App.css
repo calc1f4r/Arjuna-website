@@ -1,4 +1,3 @@
-
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -73,5 +72,38 @@
   100% {
     transform: translateX(calc(-100% - 0px));
   }
+}
+
+/* Apply stone-500 color to all text elements unless specifically overridden */
+body {
+  color: #78716c; /* stone-500 */
+}
+
+/* Style all heading elements */
+h1, h2, h3, h4, h5, h6 {
+  color: #a8a29e !important; /* stone-400 */
+}
+
+/* Style specific text elements */
+.text-foreground,
+.text-foreground-90,
+[class*="text-foreground"] {
+  color: #78716c !important; /* stone-500 */
+}
+
+.text-muted-foreground {
+  color: #57534e !important; /* stone-600 */
+}
+
+/* Prevent applying stone color to elements with specific colors */
+.text-primary,
+.text-gradient,
+.text-accent,
+.text-destructive,
+[class*="text-primary"],
+[class*="text-gradient"],
+[class*="text-accent"],
+[class*="text-destructive"] {
+  color: inherit !important;
 }
 

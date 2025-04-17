@@ -1,5 +1,6 @@
-
 import type { Config } from "tailwindcss";
+import * as tailwindcssAnimate from "tailwindcss-animate";
+import typography from "@tailwindcss/typography";
 
 export default {
 	darkMode: ["class"],
@@ -72,7 +73,8 @@ export default {
 			typography: {
 				DEFAULT: {
 					css: {
-						color: 'hsl(var(--foreground))',
+						color: 'rgb(120, 113, 108)',
+						maxWidth: '65ch',
 						a: {
 							color: 'hsl(var(--primary))',
 							'&:hover': {
@@ -80,8 +82,46 @@ export default {
 							},
 						},
 						'h1, h2, h3, h4, h5, h6': {
-							color: 'hsl(var(--foreground))',
+							color: 'rgb(168, 162, 158)',
 							fontWeight: '700',
+							letterSpacing: '-0.03em',
+							lineHeight: '1.2',
+						},
+						h1: {
+							fontSize: '2.5rem',
+							lineHeight: '1.1',
+							marginTop: '0',
+							marginBottom: '1.5rem',
+							color: 'rgb(168, 162, 158)',
+						},
+						h2: {
+							fontSize: '2rem',
+							lineHeight: '1.2',
+							marginTop: '2rem',
+							marginBottom: '1.25rem',
+							color: 'rgb(168, 162, 158)',
+						},
+						h3: {
+							fontSize: '1.5rem',
+							lineHeight: '1.3',
+							marginTop: '1.5rem',
+							marginBottom: '1rem',
+							color: 'rgb(168, 162, 158)',
+						},
+						p: {
+							marginTop: '1.25rem',
+							marginBottom: '1.25rem',
+							lineHeight: '1.75',
+							color: 'rgb(120, 113, 108)',
+						},
+						ul: {
+							color: 'rgb(120, 113, 108)',
+						},
+						ol: {
+							color: 'rgb(120, 113, 108)',
+						},
+						li: {
+							color: 'rgb(120, 113, 108)',
 						},
 						code: {
 							color: 'hsl(var(--primary))',
@@ -99,6 +139,19 @@ export default {
 						pre: {
 							backgroundColor: 'hsl(var(--secondary))',
 							borderRadius: '0.5rem',
+							padding: '1rem',
+							borderColor: 'hsl(var(--border) / 0.1)',
+						},
+						strong: {
+							color: 'rgb(168, 162, 158)',
+							fontWeight: '600',
+						},
+						blockquote: {
+							borderLeftColor: 'hsl(var(--primary))',
+							borderLeftWidth: '0.25rem',
+							paddingLeft: '1rem',
+							fontStyle: 'italic',
+							color: 'rgb(87, 83, 78)',
 						},
 					},
 				},
@@ -153,7 +206,7 @@ export default {
 		}
 	},
 	plugins: [
-		require("tailwindcss-animate"),
-		require('@tailwindcss/typography'),
+		tailwindcssAnimate,
+		typography,
 	],
 } satisfies Config;

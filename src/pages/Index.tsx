@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Shield, CheckCircle, Zap, ArrowRight, Users, FileCode, Code, Eye, Sparkles } from 'lucide-react';
+import { Shield, CheckCircle, Zap, ArrowRight, Users, FileCode, Code, Eye } from 'lucide-react';
 import GridBackgroundDemo from '@/components/ui/aceternity/GridBackgroundDemo';
 import GlowingCard from '@/components/ui/aceternity/GlowingCard';
 import MovingBorder from '@/components/ui/aceternity/MovingBorder';
@@ -14,10 +14,6 @@ const Index = () => {
       <GridBackgroundDemo className="py-20 md:py-32">
         <div className="container px-4 mx-auto">
           <div className="flex flex-col justify-center items-center text-center">
-            <div className="animate-fade-up [animation-delay:100ms]">
-              <Sparkles className="h-12 w-12 text-primary mb-4 animate-pulse-glow" />
-            </div>
-            
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight animate-fade-up mb-6">
               <span className="text-gradient animate-gradient-flow">Securing</span> the Future of <br />
               Solana & Rust Ecosystems
@@ -32,13 +28,15 @@ const Index = () => {
                 duration={3000} 
                 containerClassName="rounded-lg"
               >
-                <Button className="relative z-10 px-8 py-6 rounded-lg group">
-                  Request Audit <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </Button>
+                  <Button className="relative z-10 px-8 py-6 rounded-lg group">
+                    Request Audit <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Button>
               </MovingBorder>
+                <a href="https://github.com/ArjunaSec/audits" target="_blank" rel="noopener noreferrer">
               <Button variant="outline" className="px-8 py-6 hover:scale-105 transition-transform">
                 View Reports
               </Button>
+                </a>
             </div>
           </div>
         </div>
@@ -172,10 +170,12 @@ const Index = () => {
               <p className="text-muted-foreground max-w-2xl mb-8 animate-fade-up [animation-delay:200ms]">
                 Get in touch with our team to discuss your security needs and how Arjuna can help protect your blockchain application.
               </p>
-              <Button className="px-8 py-6 text-lg group animate-fade-up [animation-delay:400ms] hover:bg-primary/90 transition-colors">
-                Request an Audit
-                <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-              </Button>
+              <a href="https://github.com/ArjunaSec/audits" target="_blank" rel="noopener noreferrer">
+                <Button className="px-8 py-6 text-lg group animate-fade-up [animation-delay:400ms] hover:bg-primary/90 transition-colors">
+                  Request an Audit
+                  <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                </Button>
+              </a>
             </div>
           </GlowingCard>
         </div>

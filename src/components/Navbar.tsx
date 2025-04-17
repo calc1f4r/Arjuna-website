@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
@@ -22,13 +21,13 @@ const Navbar: React.FC = () => {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-6">
-          <Link to="/" className="text-sm font-medium hover:text-primary transition-colors">
+          <Link to="/" className="text-sm font-medium text-stone-500 hover:text-primary transition-colors">
             Home
           </Link>
-          <Link to="/audits" className="text-sm font-medium hover:text-primary transition-colors">
+          <Link to="https://github.com/ArjunaSec/audits" className="text-sm font-medium text-stone-500 hover:text-primary transition-colors">
             Audits
           </Link>
-          <Link to="/blog" className="text-sm font-medium hover:text-primary transition-colors">
+          <Link to="/blog" className="text-sm font-medium text-stone-500 hover:text-primary transition-colors">
             Blog
           </Link>
           <Button className="ml-4">Request Audit</Button>
@@ -37,7 +36,7 @@ const Navbar: React.FC = () => {
         {/* Mobile Navigation Button */}
         <button 
           onClick={toggleMenu} 
-          className="md:hidden text-foreground hover:text-primary"
+          className="md:hidden text-stone-500 hover:text-primary"
           aria-label="Toggle Menu"
         >
           {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -50,21 +49,21 @@ const Navbar: React.FC = () => {
           <div className="container px-4 py-4 flex flex-col space-y-4">
             <Link 
               to="/" 
-              className="text-sm font-medium hover:text-primary transition-colors px-2 py-2"
+              className="text-sm font-medium text-stone-500 hover:text-primary transition-colors px-2 py-2"
               onClick={() => setIsOpen(false)}
             >
               Home
             </Link>
             <Link 
               to="/audits" 
-              className="text-sm font-medium hover:text-primary transition-colors px-2 py-2"
+              className="text-sm font-medium text-stone-500 hover:text-primary transition-colors px-2 py-2"
               onClick={() => setIsOpen(false)}
             >
               Audits
             </Link>
             <Link 
               to="/blog" 
-              className="text-sm font-medium hover:text-primary transition-colors px-2 py-2"
+              className="text-sm font-medium text-stone-500 hover:text-primary transition-colors px-2 py-2"
               onClick={() => setIsOpen(false)}
             >
               Blog
