@@ -129,21 +129,23 @@ const Index = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="flex gap-4 group hover:bg-secondary/10 p-4 rounded-lg transition-colors animate-fade-up [animation-delay:300ms]">
+            {/* Item 1: Specialized Expertise */}
+            <div className="flex gap-4 group bg-white/5 backdrop-blur-md border border-white/10 rounded-xl shadow-lg p-6 transition-all duration-300 animate-fade-up [animation-delay:300ms] hover:border-white/20 hover:bg-white/10 hover:shadow-xl hover:-translate-y-1">
               <div className="flex-shrink-0 mt-1 group-hover:scale-110 transition-transform">
-                <CheckCircle className="h-6 w-6 text-primary" />
+                <Code className="h-6 w-6 text-primary" /> {/* Changed icon */}
               </div>
               <div>
-                <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">Expert Team</h3>
+                <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">Specialized Expertise in Solana & Rust</h3> {/* Updated title */}
                 <p className="text-muted-foreground">
-                  Our auditors have extensive experience in blockchain security, with specialized knowledge in Solana and Rust ecosystems.
-                </p>
+                  Deep focus on Solana's architecture and Rust ensures thorough understanding and identification of platform-specific vulnerabilities (e.g., missing signer checks, ownership issues, unsafe Rust).
+                </p> {/* Updated description */}
               </div>
             </div>
 
-            <div className="flex gap-4 group hover:bg-secondary/10 p-4 rounded-lg transition-colors animate-fade-up [animation-delay:400ms]">
+            {/* Item 2: Rigorous Methodology */}
+            <div className="flex gap-4 group bg-white/5 backdrop-blur-md border border-white/10 rounded-xl shadow-lg p-6 transition-all duration-300 animate-fade-up [animation-delay:400ms] hover:border-white/20 hover:bg-white/10 hover:shadow-xl hover:-translate-y-1">
               <div className="flex-shrink-0 mt-1 group-hover:scale-110 transition-transform">
-                <Shield className="h-6 w-6 text-primary" />
+                <Award className="h-6 w-6 text-primary" /> {/* Changed icon */}
               </div>
               <div>
                 <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">Rigorous Methodology</h3>
@@ -153,7 +155,8 @@ const Index = () => {
               </div>
             </div>
 
-            <div className="flex gap-4 group hover:bg-secondary/10 p-4 rounded-lg transition-colors animate-fade-up [animation-delay:500ms]">
+            {/* Item 3: Client-Focused Approach */}
+            <div className="flex gap-4 group bg-white/5 backdrop-blur-md border border-white/10 rounded-xl shadow-lg p-6 transition-all duration-300 animate-fade-up [animation-delay:500ms] hover:border-white/20 hover:bg-white/10 hover:shadow-xl hover:-translate-y-1">
               <div className="flex-shrink-0 mt-1 group-hover:scale-110 transition-transform">
                 <Users className="h-6 w-6 text-primary" />
               </div>
@@ -165,14 +168,15 @@ const Index = () => {
               </div>
             </div>
 
-            <div className="flex gap-4 group hover:bg-secondary/10 p-4 rounded-lg transition-colors animate-fade-up [animation-delay:600ms]">
+            {/* Item 4: Fast Turnaround */}
+            <div className="flex gap-4 group bg-white/5 backdrop-blur-md border border-white/10 rounded-xl shadow-lg p-6 transition-all duration-300 animate-fade-up [animation-delay:600ms] hover:border-white/20 hover:bg-white/10 hover:shadow-xl hover:-translate-y-1">
               <div className="flex-shrink-0 mt-1 group-hover:scale-110 transition-transform">
                 <Zap className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">Fast Turnaround</h3>
+                <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">Proved record thorugh Audit competitions</h3>
                 <p className="text-muted-foreground">
-                  Quick response times and flexible scheduling to accommodate your project timeline without compromising quality.
+                  Demonstrated excellence through top placements in competitive audit contests, showcasing our expertise in finding critical vulnerabilities.
                 </p>
               </div>
             </div>
@@ -258,7 +262,7 @@ const Index = () => {
                ].map((area, index) => (
                  <Card 
                    key={area.title} 
-                   className="group bg-gradient-to-br from-card/70 to-card/90 backdrop-blur-sm border border-white/10 
+                   className="group bg-card/80 backdrop-blur-sm border border-white/10 
                               hover:border-primary/30 hover:bg-secondary/20 transition-all duration-300 
                               transform hover:-translate-y-1.5 shadow-md hover:shadow-primary/15 rounded-xl overflow-hidden"
                  >
@@ -271,7 +275,11 @@ const Index = () => {
                    <CardContent className="px-5 pb-5">
                      <ul className="text-muted-foreground text-sm space-y-2">
                        {area.items.map((item, itemIndex) => (
-                         <li key={itemIndex} className="flex items-center gap-2 group/item">
+                         <li 
+                           key={itemIndex} 
+                           className="flex items-center gap-2 group/item animate-fade-in" 
+                           style={{ animationDelay: `${itemIndex * 100 + 500}ms` }} // Stagger delay, start after card fades up
+                         >
                            <span className="h-1 w-1 rounded-full bg-primary/60 group-hover/item:bg-primary transition-colors inline-block shrink-0"></span> 
                            <span className="group-hover/item:text-foreground/90 transition-colors duration-200 inline-block">{item}</span>
                          </li>
@@ -340,14 +348,15 @@ const Index = () => {
                 key={post.id} 
                 className={`animate-fade-up [animation-delay:${400 + index * 200}ms]`}
               >
-                <div className="glass-card rounded-xl overflow-hidden transition-all hover:scale-[1.02] hover:bg-secondary/30 duration-300 h-full flex flex-col shadow-lg border border-white/10">
+                {/* Apply glassmorphism styles here */}
+                <div className="bg-card/90 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden transition-all hover:scale-[1.02] hover:bg-secondary/30 duration-300 h-full flex flex-col shadow-lg">
                   <div className="relative h-56 overflow-hidden">
                     {post.coverImage ? (
                       <>
                         <img 
                           src={post.coverImage} 
                           alt={post.title} 
-                          className="object-cover transform hover:scale-105 transition-transform duration-500" 
+                          className="object-cover w-full h-full transform group-hover:scale-105 transition-transform duration-500" // Added w-full h-full
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60"></div>
                       </>
@@ -357,7 +366,8 @@ const Index = () => {
                       </div>
                     )}
                   </div>
-                  <div className="p-6 flex flex-col flex-grow bg-card/90 backdrop-blur-sm">
+                  {/* Removed redundant bg-card/90 and backdrop-blur-sm from here */}
+                  <div className="p-6 flex flex-col flex-grow">
                     <div className="flex justify-between items-center mb-4">
                       {post.tags && post.tags.length > 0 && (
                         <span className={`text-xs font-medium px-3 py-1 rounded-full ${ 

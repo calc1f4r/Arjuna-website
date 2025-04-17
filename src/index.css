@@ -450,4 +450,45 @@
   .hover-glitch:hover {
     animation: glitch-hover 0.4s linear;
   }
+
+  /* Add fade-in animation */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+    opacity: 0; /* Start hidden */
+  }
+
+  /* You might already have fade-up, ensure it's defined if used */
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .animate-fade-up {
+    animation: fade-up 0.6s ease-out forwards;
+    opacity: 0; /* Start hidden */
+  }
+
+  /* You might already have gradient-flow, ensure it's defined if used */
+  @keyframes gradient-flow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  .animate-gradient-flow {
+    background-size: 200% 200%;
+    animation: gradient-flow 4s ease infinite;
+  }
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-pink-500 to-purple-500; 
+  }
 }
