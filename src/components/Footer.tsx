@@ -11,6 +11,7 @@ const Footer: React.FC = () => {
           <div className="space-y-4">
             <Link to="/" className="flex items-center space-x-2">
               <Logo className="h-12 w-12" />
+              <span className="text-xl font-bold tracking-tight text-gradient">Arjuna</span>  
             </Link>
             <p className="text-sm text-stone-500">
               Leading security and auditing services for Solana and Rust applications.

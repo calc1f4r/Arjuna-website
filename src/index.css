@@ -13,7 +13,7 @@
     --popover: 240 10% 3.9%;
     --popover-foreground: 60 4% 60%;
 
-    --primary: 280 90% 70%;
+    --primary: 336 100% 52% / 0.8;
     --primary-foreground: 60 4% 60%;
 
     --secondary: 240 3.7% 15.9%;
@@ -22,7 +22,7 @@
     --muted: 240 3.7% 15.9%;
     --muted-foreground: 60 5% 50%;
 
-    --accent: 284 59% 30%;
+    --accent: 336 80% 40% / 0.8;
     --accent-foreground: 60 4% 60%;
 
     --destructive: 0 62.8% 30.6%;
@@ -139,7 +139,7 @@
   }
   
   .text-gradient {
-    @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-[rgba(255,13,104,0.8)] to-[rgba(204,10,83,0.8)] bg-clip-text text-transparent;
   }
 
   .aceternity-border {
@@ -151,9 +151,9 @@
     @apply absolute inset-0 rounded-lg;
     background: linear-gradient(
       to bottom right,
-      hsl(var(--primary)), 
+      rgba(255, 13, 104, 0.8), 
       transparent,
-      hsl(var(--accent)),
+      rgba(204, 10, 83, 0.8),
       transparent
     );
   }
@@ -201,20 +201,21 @@
     animation: aurora-rotate 60s infinite linear;
   }
 
+
   .aurora-1 {
     background: radial-gradient(circle at 50% 50%, 
-      rgba(76, 0, 255, 0.2) 0%, 
-      rgba(76, 0, 255, 0.1) 25%, 
-      rgba(76, 0, 255, 0) 100%);
+      rgba(255, 13, 104, 0.16) 0%, 
+      rgba(255, 13, 104, 0.08) 25%, 
+      rgba(255, 13, 104, 0) 100%);
     transform-origin: 40% 40%;
     animation-duration: 120s;
   }
 
   .aurora-2 {
     background: radial-gradient(circle at 50% 50%, 
-      rgba(155, 135, 245, 0.2) 0%, 
-      rgba(155, 135, 245, 0.1) 25%, 
-      rgba(155, 135, 245, 0) 100%);
+      rgba(255, 77, 140, 0.16) 0%, 
+      rgba(255, 77, 140, 0.08) 25%, 
+      rgba(255, 77, 140, 0) 100%);
     transform-origin: 60% 60%;
     animation-duration: 90s;
     animation-direction: reverse;
@@ -222,18 +223,18 @@
 
   .aurora-3 {
     background: radial-gradient(circle at 50% 50%, 
-      rgba(214, 188, 250, 0.2) 0%, 
-      rgba(214, 188, 250, 0.1) 25%, 
-      rgba(214, 188, 250, 0) 100%);
+      rgba(255, 128, 169, 0.16) 0%, 
+      rgba(255, 128, 169, 0.08) 25%, 
+      rgba(255, 128, 169, 0) 100%);
     transform-origin: 30% 30%;
     animation-duration: 70s;
   }
 
   .aurora-4 {
     background: radial-gradient(circle at 50% 50%, 
-      rgba(139, 92, 246, 0.2) 0%, 
-      rgba(139, 92, 246, 0.1) 25%, 
-      rgba(139, 92, 246, 0) 100%);
+      rgba(255, 13, 104, 0.16) 0%, 
+      rgba(255, 13, 104, 0.08) 25%, 
+      rgba(255, 13, 104, 0) 100%);
     transform-origin: 70% 70%;
     animation-duration: 110s;
     animation-direction: reverse;

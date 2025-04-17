@@ -102,7 +102,7 @@ const Index = () => {
 
       {/* Why Choose Us */}
       <section className="py-20 bg-black/30 relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-primary/5 to-transparent opacity-50"></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-[rgba(255,13,104,0.04)] to-transparent opacity-50"></div>
         <div className="container px-4 mx-auto relative z-10">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 animate-fade-up">Why Choose Arjuna</h2>
@@ -201,7 +201,7 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <Link to="/blog" className="animate-fade-up [animation-delay:400ms]">
               <div className="glass-card rounded-xl overflow-hidden transition-all hover:scale-[1.02] hover:bg-secondary/30 duration-300">
-                <div className="h-48 bg-gradient-radial from-primary/20 to-transparent relative overflow-hidden">
+                <div className="h-48 bg-gradient-radial from-[rgba(255,13,104,0.16)] to-transparent relative overflow-hidden">
                   <div className="aurora-container absolute inset-0 opacity-40"></div>
                 </div>
                 <div className="p-6">
@@ -221,7 +221,7 @@ const Index = () => {
             
             <Link to="/blog" className="animate-fade-up [animation-delay:600ms]">
               <div className="glass-card rounded-xl overflow-hidden transition-all hover:scale-[1.02] hover:bg-secondary/30 duration-300">
-                <div className="h-48 bg-gradient-radial from-accent/20 to-transparent relative overflow-hidden">
+                <div className="h-48 bg-gradient-radial from-[rgba(204,10,83,0.16)] to-transparent relative overflow-hidden">
                   <div className="aurora-container absolute inset-0 opacity-40"></div>
                 </div>
                 <div className="p-6">

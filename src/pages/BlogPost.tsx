@@ -8,7 +8,7 @@ import NorthernLights from '@/components/ui/aceternity/NorthernLights';
 const blogPosts: BlogPostType[] = [
   {
     id: 1,
-    title: "Exploiting Vulnerabilities in Solana Smart Contracts",
+    title: "Ultimate Solana Security Checklist",
     content: `
       <p class="mb-4">Smart contracts on Solana are written in Rust and compiled to Berkley Packet Filter (BPF) bytecode. This architecture offers high performance but introduces unique security considerations that differ from EVM-based blockchains like Ethereum.</p>
       

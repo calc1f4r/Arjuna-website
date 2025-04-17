@@ -1,4 +1,3 @@
-
 import React from 'react';
 import GridBackgroundDemo from '@/components/ui/aceternity/GridBackgroundDemo';
 import { Button } from '@/components/ui/button';
@@ -6,14 +5,14 @@ import { Search, Tag, CalendarDays, Clock, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const featuredPost = {
-  id: 1,
-  title: "Exploiting Vulnerabilities in Solana Smart Contracts",
-  excerpt: "An in-depth analysis of common security flaws in Solana programs and best practices for prevention.",
-  coverImage: "bg-gradient-to-br from-primary/30 to-accent/30",
-  date: "June 15, 2023",
-  readTime: "8 min read",
+  id: "code-examples",
+  title: "Understanding Smart Contract Security with Code Examples",
+  excerpt: "Explore smart contract security with syntax-highlighted code examples across Rust, JavaScript, Solidity, and more.",
+  coverImage: "bg-gradient-to-br from-[rgba(255,13,104,0.24)] to-[rgba(204,10,83,0.24)]",
+  date: "July 12, 2023",
+  readTime: "12 min read",
   author: "Alex Johnson",
-  tags: ["Security", "Solana"]
+  tags: ["Security", "Solana", "Smart Contracts", "Rust"]
 };
 
 const blogPosts = [
