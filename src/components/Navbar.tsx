@@ -15,7 +15,7 @@ const Navbar: React.FC = () => {
     <nav className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md border-b border-border">
       <div className="container flex justify-between items-center py-4 px-4 md:px-8">
         <Link to="/" className="flex items-center space-x-2">
-          <Logo className="h-8 w-8" />
+          <Logo className="h-16 w-16" />
           <span className="text-xl font-bold tracking-tight text-gradient">Arjuna</span>
         </Link>
 
@@ -30,7 +30,9 @@ const Navbar: React.FC = () => {
           <Link to="/blog" className="text-sm font-medium text-stone-500 hover:text-primary transition-colors">
             Blog
           </Link>
-          <Button className="ml-4">Request Audit</Button>
+          <a href="https://t.me/calc1f4r" target="_blank" rel="noopener noreferrer">
+            <Button className="ml-4">Request Quote</Button>
+          </a>
         </div>
 
         {/* Mobile Navigation Button */}
@@ -68,7 +70,9 @@ const Navbar: React.FC = () => {
             >
               Blog
             </Link>
-            <Button onClick={() => setIsOpen(false)} className="w-full">Request Audit</Button>
+            <a href="https://t.me/calc1f4r" target="_blank" rel="noopener noreferrer" onClick={() => setIsOpen(false)}>
+              <Button className="w-full">Request Quote</Button>
+            </a>
           </div>
         </div>
       )}

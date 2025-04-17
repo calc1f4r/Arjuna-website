@@ -10,8 +10,7 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-4">
             <Link to="/" className="flex items-center space-x-2">
-              <Logo className="h-8 w-8" />
-              <span className="text-xl font-bold text-gradient">Arjuna</span>
+              <Logo className="h-12 w-12" />
             </Link>
             <p className="text-sm text-stone-500">
               Leading security and auditing services for Solana and Rust applications.
