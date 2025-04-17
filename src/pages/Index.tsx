@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Shield, CheckCircle, Zap, ArrowRight, Users, FileCode, Code, Eye, Sparkles } from 'lucide-react';
@@ -7,14 +6,6 @@ import GlowingCard from '@/components/ui/aceternity/GlowingCard';
 import MovingBorder from '@/components/ui/aceternity/MovingBorder';
 import NorthernLights from '@/components/ui/aceternity/NorthernLights';
 import { Link } from 'react-router-dom';
-
-const clients = [
-  { name: "SolanaChain" },
-  { name: "RustFi" },
-  { name: "Anchor Protocol" },
-  { name: "Serum DEX" },
-  { name: "Marinade Finance" },
-];
 
 const Index = () => {
   return (
@@ -48,18 +39,6 @@ const Index = () => {
               <Button variant="outline" className="px-8 py-6 hover:scale-105 transition-transform">
                 View Reports
               </Button>
-            </div>
-
-            <div className="mt-16 grid grid-cols-2 md:grid-cols-5 gap-4 items-center justify-center opacity-70">
-              {clients.map((client, index) => (
-                <div 
-                  key={client.name} 
-                  className="flex items-center justify-center p-4 hover:opacity-100 transition-opacity"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  <p className="text-sm font-semibold text-muted-foreground animate-fade-in">{client.name}</p>
-                </div>
-              ))}
             </div>
           </div>
         </div>
