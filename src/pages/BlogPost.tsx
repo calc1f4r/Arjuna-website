@@ -236,9 +236,13 @@ const BlogPostPage: React.FC = () => {
   
   return (
     <div className="min-h-screen">
-      <GridBackgroundDemo className="py-6">
+      <GridBackgroundDemo className="py-10">
         <div className="container px-4 mx-auto">
-          <h2 className="text-xl font-semibold">Security Insights</h2>
+          <div className="flex items-center justify-center">
+            <div className="bg-primary/20 px-4 py-1 rounded-full backdrop-blur-sm">
+              <h2 className="text-sm font-medium tracking-wider uppercase">Security Insights</h2>
+            </div>
+          </div>
         </div>
       </GridBackgroundDemo>
       

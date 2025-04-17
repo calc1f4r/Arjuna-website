@@ -69,6 +69,40 @@ export default {
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
 			},
+			typography: {
+				DEFAULT: {
+					css: {
+						color: 'hsl(var(--foreground))',
+						a: {
+							color: 'hsl(var(--primary))',
+							'&:hover': {
+								color: 'hsl(var(--primary))',
+							},
+						},
+						'h1, h2, h3, h4, h5, h6': {
+							color: 'hsl(var(--foreground))',
+							fontWeight: '700',
+						},
+						code: {
+							color: 'hsl(var(--primary))',
+							backgroundColor: 'hsl(var(--secondary))',
+							padding: '0.25rem',
+							borderRadius: '0.25rem',
+							fontWeight: '500',
+						},
+						'code::before': {
+							content: '""',
+						},
+						'code::after': {
+							content: '""',
+						},
+						pre: {
+							backgroundColor: 'hsl(var(--secondary))',
+							borderRadius: '0.5rem',
+						},
+					},
+				},
+			},
 			keyframes: {
 				'accordion-down': {
 					from: { height: '0' },
@@ -89,6 +123,10 @@ export default {
 				'gradient-flow': {
 					'0%, 100%': { backgroundPosition: '0% 50%' },
 					'50%': { backgroundPosition: '100% 50%' },
+				},
+				'pulse-glow': {
+					'0%, 100%': { opacity: '0.5' },
+					'50%': { opacity: '1' },
 				}
 			},
 			animation: {
@@ -96,12 +134,16 @@ export default {
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'fade-in': 'fade-in 0.5s ease-out',
 				'fade-up': 'fade-up 0.5s ease-out',
-				'gradient-flow': 'gradient-flow 3s ease infinite'
+				'gradient-flow': 'gradient-flow 3s ease infinite',
+				'pulse-glow': 'pulse-glow 3s ease-in-out infinite'
 			},
 			backgroundImage: {
 				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
 			}
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [
+		require("tailwindcss-animate"),
+		require('@tailwindcss/typography'),
+	],
 } satisfies Config;

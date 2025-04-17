@@ -44,10 +44,24 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "ss01", "ss02", "cv01", "cv02", "cv03";
+    letter-spacing: -0.01em;
   }
 
   html {
     @apply scroll-smooth;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold tracking-tight;
+    letter-spacing: -0.03em;
+  }
+
+  pre {
+    @apply rounded-xl border border-white/10 shadow-xl;
+  }
+
+  code {
+    @apply text-primary/90 font-mono text-sm;
   }
 }
 
@@ -83,5 +97,31 @@
 
   .aceternity-border > * {
     @apply relative z-10;
+  }
+
+  /* New utility classes */
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .prose-custom {
+    @apply prose-code:bg-secondary/20 prose-code:rounded-md prose-code:px-1 prose-code:py-0.5;
+    @apply prose-pre:shadow-xl prose-pre:border prose-pre:border-white/10;
+    @apply prose-headings:mb-6 prose-headings:mt-10;
+    @apply prose-p:leading-relaxed prose-li:leading-relaxed;
+  }
+
+  /* Smooth gradient dividers */
+  .gradient-divider {
+    @apply w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent my-10;
+  }
+
+  /* Glow effects */
+  .glow-text {
+    text-shadow: 0 0 30px rgba(var(--primary), 0.6);
+  }
+
+  .glow-border {
+    box-shadow: 0 0 20px -5px rgba(var(--primary), 0.3);
   }
 }

@@ -1,13 +1,20 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 
 interface MovingBorderProps {
   children: React.ReactNode;
   className?: string;
+  containerClassName?: string;
   duration?: number;
 }
 
-const MovingBorder: React.FC<MovingBorderProps> = ({ children, className, duration = 4000 }) => {
+const MovingBorder: React.FC<MovingBorderProps> = ({ 
+  children, 
+  className, 
+  containerClassName,
+  duration = 4000 
+}) => {
   const [x, setX] = useState(0);
   const requestRef = useRef<number>();
 
@@ -24,7 +31,7 @@ const MovingBorder: React.FC<MovingBorderProps> = ({ children, className, durati
   const gradientTransform = `translateX(${x}px)`;
 
   return (
-    <div className={cn("relative rounded-lg p-px overflow-hidden", className)}>
+    <div className={cn("relative rounded-lg p-px overflow-hidden", containerClassName)}>
       <div
         className="absolute inset-0 bg-gradient-to-r from-primary to-accent [mask-image:linear-gradient(to_right,white_0%,black_50%,white_100%)]"
         style={{
@@ -32,7 +39,7 @@ const MovingBorder: React.FC<MovingBorderProps> = ({ children, className, durati
           animation: `scroll ${duration}ms linear infinite`,
         }}
       />
-      <div className="relative bg-background rounded-lg">
+      <div className={cn("relative bg-background rounded-lg", className)}>
         {children}
       </div>
     </div>
