@@ -5,6 +5,7 @@ import GridBackgroundDemo from '@/components/ui/aceternity/GridBackgroundDemo';
 import GlowingCard from '@/components/ui/aceternity/GlowingCard';
 import MovingBorder from '@/components/ui/aceternity/MovingBorder';
 import NorthernLights from '@/components/ui/aceternity/NorthernLights';
+import Meteors from '@/components/ui/aceternity/Meteors';
 import { Link } from 'react-router-dom';
 import postsData from '@/data/blog/posts.json'; // Import blog post data
 import { Badge } from '@/components/ui/badge';
@@ -56,55 +57,65 @@ const Index = () => {
       logo: "/images/audits/inclusive.png"
     },
     {
+      protocol: "Reserve-Protocol",
+      description: "Solana, Staking",
+      findings: "1 High 1 Medium",
+      rank: "🥇 4th",
+      logo: "/images/audits/pump.png"
+    },
+    {
       protocol: "Soon-Labs/Soon",
       description: "SVM, cross-chain",
       findings: "3 Highs (1 solo)",
       rank: "🥇 10th",
       logo: "/images/audits/soon.png"
     },
-    {
-      protocol: "Reserve-Protocol",
-      description: "Solana, Staking",
-      findings: "1 High 1 Medium",
-      rank: "🥇 4th",
-      logo: "/images/audits/pump.png"
-    }
+   
   ];
 
   return (
     <div className="min-h-screen flex flex-col">
       {/* Hero Section */}
-      <GridBackgroundDemo className="py-20 md:py-32">
-        <div className="container px-4 mx-auto">
-          <div className="flex flex-col justify-center items-center text-center">
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight animate-fade-up mb-6">
-              <span className="text-gradient animate-gradient-flow">Securing</span> the Future of <br />
-              Solana & Rust Ecosystems
-            </h1>
-            <p className="text-muted-foreground text-lg max-w-2xl mb-8 animate-fade-up [animation-delay:200ms]">
-              Industry-leading security audits and consulting for Secure Solana smart contracts and Rust Ecosystems projects.
-            </p>
+      <div className="relative overflow-hidden"> {/* Keep overflow-hidden */}
+        {/* GridBackgroundDemo now wraps Meteors */}
+          <Meteors number={40} className="absolute inset-0 z-20" /> 
+        <GridBackgroundDemo className="py-20 md:py-32 relative"> {/* Ensure GridBackgroundDemo is relative */}
+          {/* Render Meteors first, inside GridBackgroundDemo but before its content */}
+          {/* Give Meteors a higher z-index to appear above content */}
+          
+          {/* Content container needs lower z-index */}
+          <div className="container px-4 mx-auto relative z-10"> 
+            <div className="flex flex-col justify-center items-center text-center">
+              {/* ... existing h1, p, buttons ... */}
+              <h1 className="text-4xl md:text-6xl font-bold tracking-tight animate-fade-up mb-6">
+                <span className="text-gradient animate-gradient-flow">Securing</span> the Future of <br />
+                Solana & Rust Ecosystems
+              </h1>
+              <p className="text-muted-foreground text-lg max-w-2xl mb-8 animate-fade-up [animation-delay:200ms]">
+                Industry-leading security audits and consulting for Secure Solana smart contracts and Rust Ecosystems projects.
+              </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 animate-fade-up [animation-delay:400ms]">
-              <MovingBorder 
-                duration={3000} 
-                containerClassName="rounded-lg"
-              >
-                <a href="https://t.me/calc1f4r" target="_blank" rel="noopener noreferrer">
-                  <Button className="relative z-10 px-8 py-6 rounded-lg group">
-                    Request Quote <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  </Button>
-                </a>
-              </MovingBorder>
-                <a href="https://github.com/ArjunaSec/audits" target="_blank" rel="noopener noreferrer">
-              <Button variant="outline" className="px-8 py-6 hover:scale-105 transition-transform">
-                View Reports
-              </Button>
-                </a>
+              <div className="flex flex-col sm:flex-row gap-4 animate-fade-up [animation-delay:400ms]">
+                <MovingBorder 
+                  duration={3000} 
+                  containerClassName="rounded-lg"
+                >
+                  <a href="https://t.me/calc1f4r" target="_blank" rel="noopener noreferrer">
+                    <Button className="relative z-10 px-8 py-6 rounded-lg group">
+                      Request Quote <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </Button>
+                  </a>
+                </MovingBorder>
+                  <a href="https://github.com/ArjunaSec/audits" target="_blank" rel="noopener noreferrer">
+                <Button variant="outline" className="px-8 py-6 hover:scale-105 transition-transform">
+                  View Reports
+                </Button>
+                  </a>
+              </div>
             </div>
           </div>
-        </div>
-      </GridBackgroundDemo>
+        </GridBackgroundDemo>
+      </div>
 
       {/* Why Choose Us */}
       <section className="py-20 bg-black/30 relative overflow-hidden">
@@ -170,140 +181,118 @@ const Index = () => {
       </section>
 
       {/* Audit Portfolio Section */}
-      <section className="py-20 relative overflow-hidden bg-gradient-to-b from-background to-background/80">
+      <section className="py-24 relative overflow-hidden bg-gradient-to-b from-background to-background/90"> {/* Increased padding */}
         <div className="container px-4 mx-auto">
-          <div className="text-center mb-12">
+          <div className="text-center mb-20"> {/* Increased bottom margin */}
             <h2 className="text-3xl md:text-4xl font-bold mb-4 animate-fade-up">Our Audit Portfolio</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto animate-fade-up [animation-delay:200ms]">
               Proven track record of securing Rust & Solana ecosystems
             </p>
           </div>
 
-          {/* Audit Highlights */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+          {/* Audit Highlights - Enhanced Card Design */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20"> {/* Increased bottom margin */}
             {auditHighlights.map((audit, index) => (
-              <Card key={index} className="overflow-hidden bg-secondary/5 border-secondary/20 hover:bg-secondary/10 transition-colors hover:scale-105 transform duration-300 animate-fade-up [animation-delay:300ms]">
-                <CardHeader className="pb-2">
-                  <div className="flex justify-between items-center">
-                    <CardTitle className="text-xl font-bold">{audit.protocol}</CardTitle>
-                    <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">{audit.rank}</Badge>
+              <Card 
+                key={index} 
+                className="group relative overflow-hidden shadow-lg hover:shadow-primary/25 bg-card/80 backdrop-blur-sm border border-white/10 
+                           transition-all duration-300 animate-fade-up [animation-delay:300ms] hover:-translate-y-1"
+              >
+                {/* Top Accent */}
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary/30 via-primary to-primary/30 opacity-70 group-hover:opacity-100 transition-opacity duration-300"></div>
+                
+                <CardHeader className="pt-8 pb-4 px-6"> {/* Adjusted padding */}
+                  <div className="flex justify-between items-center mb-2">
+                    <CardTitle className="text-xl font-semibold tracking-tight group-hover:text-primary transition-colors">{audit.protocol}</CardTitle>
+                    <Badge 
+                      variant="outline" 
+                      className={`ml-3 px-2.5 py-0.5 text-xs font-medium border-opacity-60 group-hover:border-opacity-100 transition-all rounded-full
+                        ${audit.rank.includes('2nd') ? 'border-slate-400 text-slate-400 bg-slate-900/50 group-hover:bg-slate-800/60' : 
+                          audit.rank.includes('4th') || audit.rank.includes('10th') ? 'border-yellow-500 text-yellow-500 bg-yellow-900/50 group-hover:bg-yellow-800/60' : 
+                          'border-primary/70 text-primary bg-primary/10 group-hover:bg-primary/20'}`}
+                    >
+                      {audit.rank}
+                    </Badge>
                   </div>
-                  <CardDescription>{audit.description}</CardDescription>
+                  <CardDescription className="text-sm text-muted-foreground/90">{audit.description}</CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="flex items-center space-x-2 text-muted-foreground mb-2">
-                    <Trophy className="h-5 w-5 text-yellow-500" />
-                    <span>{audit.findings}</span>
-                  </div>
+                
+                <CardContent className="px-6 pb-5"> {/* Adjusted padding */}
+                  {/* Findings */}
+                  <div className="flex items-start space-x-3 p-3.5 bg-black/20 rounded-lg border border-white/10 mb-5 shadow-inner">
+                     <div className="mt-0.5">
+                       <Trophy className="h-5 w-5 text-yellow-400/80" />
+                     </div>
+                     <div>
+                       <div className="text-sm font-medium text-foreground/95">Findings</div>
+                       <div className="text-muted-foreground text-sm">{audit.findings}</div>
+                     </div>
+                   </div>
                 </CardContent>
-                <CardFooter className="pt-0">
-                  <a 
-                    href="https://github.com/ArjunaSec/Audits" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-primary text-sm flex items-center hover:underline"
-                  >
-                    View report <ExternalLink className="ml-1 h-3 w-3" />
-                  </a>
+
+                <CardFooter className="px-6 pb-6"> {/* Adjusted padding */}
+                   {/* View report button */}
+                   <a 
+                     href="https://github.com/ArjunaSec/Audits" 
+                     target="_blank" 
+                     rel="noopener noreferrer"
+                     className="inline-flex items-center text-sm font-medium text-primary/90 hover:text-primary transition-colors group/link"
+                   >
+                     <span className="border-b border-primary/40 group-hover/link:border-primary/70 pb-0.5 transition-all">View full report</span> 
+                     <ExternalLink className="ml-1.5 h-3.5 w-3.5 group-hover/link:translate-x-0.5 transition-transform" />
+                   </a>
                 </CardFooter>
               </Card>
             ))}
           </div>
 
-          {/* Expertise */}
-          <div className="glass-card rounded-xl p-8 bg-secondary/5 border border-secondary/20 animate-fade-up [animation-delay:400ms]">
-            <h3 className="text-2xl font-bold mb-6">Areas of Expertise</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="flex flex-col space-y-2">
-                <h4 className="font-medium flex items-center gap-2">
-                  <Code className="h-5 w-5 text-primary" /> Languages
-                </h4>
-                <ul className="text-muted-foreground text-sm space-y-1">
-                  <li className="flex items-center gap-1">
-                    <span className="h-1 w-1 rounded-full bg-primary inline-block"></span> Solidity
-                  </li>
-                  <li className="flex items-center gap-1">
-                    <span className="h-1 w-1 rounded-full bg-primary inline-block"></span> Rust
-                  </li>
-                  <li className="flex items-center gap-1">
-                    <span className="h-1 w-1 rounded-full bg-primary inline-block"></span> Move
-                  </li>
-                  <li className="flex items-center gap-1">
-                    <span className="h-1 w-1 rounded-full bg-primary inline-block"></span> Cairo
-                  </li>
-                </ul>
-              </div>
-              
-              <div className="flex flex-col space-y-2">
-                <h4 className="font-medium flex items-center gap-2">
-                  <FileCode className="h-5 w-5 text-primary" /> Blockchains
-                </h4>
-                <ul className="text-muted-foreground text-sm space-y-1">
-                  <li className="flex items-center gap-1">
-                    <span className="h-1 w-1 rounded-full bg-primary inline-block"></span> Ethereum
-                  </li>
-                  <li className="flex items-center gap-1">
-                    <span className="h-1 w-1 rounded-full bg-primary inline-block"></span> Solana / SVM
-                  </li>
-                  <li className="flex items-center gap-1">
-                    <span className="h-1 w-1 rounded-full bg-primary inline-block"></span> Starknet
-                  </li>
-                  <li className="flex items-center gap-1">
-                    <span className="h-1 w-1 rounded-full bg-primary inline-block"></span> Aptos / S
-                  </li>
-                </ul>
-              </div>
-              
-              <div className="flex flex-col space-y-2">
-                <h4 className="font-medium flex items-center gap-2">
-                  <BookOpen className="h-5 w-5 text-primary" /> Expertise
-                </h4>
-                <ul className="text-muted-foreground text-sm space-y-1">
-                  <li className="flex items-center gap-1">
-                    <span className="h-1 w-1 rounded-full bg-primary inline-block"></span> Cross-chain bridges
-                  </li>
-                  <li className="flex items-center gap-1">
-                    <span className="h-1 w-1 rounded-full bg-primary inline-block"></span> MEV
-                  </li>
-                  <li className="flex items-center gap-1">
-                    <span className="h-1 w-1 rounded-full bg-primary inline-block"></span> DeFi protocols
-                  </li>
-                  <li className="flex items-center gap-1">
-                    <span className="h-1 w-1 rounded-full bg-primary inline-block"></span> Smart contracts
-                  </li>
-                </ul>
-              </div>
-              
-              <div className="flex flex-col space-y-2">
-                <h4 className="font-medium flex items-center gap-2">
-                  <Eye className="h-5 w-5 text-primary" /> Tools
-                </h4>
-                <ul className="text-muted-foreground text-sm space-y-1">
-                  <li className="flex items-center gap-1">
-                    <span className="h-1 w-1 rounded-full bg-primary inline-block"></span> Foundry
-                  </li>
-                  <li className="flex items-center gap-1">
-                    <span className="h-1 w-1 rounded-full bg-primary inline-block"></span> Anchor
-                  </li>
-                  <li className="flex items-center gap-1">
-                    <span className="h-1 w-1 rounded-full bg-primary inline-block"></span> Fuzzing frameworks
-                  </li>
-                  <li className="flex items-center gap-1">
-                    <span className="h-1 w-1 rounded-full bg-primary inline-block"></span> Symbolic execution
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
+          {/* Expertise Section - Enhanced Card Design */}
+           <div className="mb-16 animate-fade-up [animation-delay:400ms]">
+             <h3 className="text-2xl font-bold mb-10 text-center">Areas of Expertise</h3> {/* Increased margin */}
+             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+               {[
+                 { title: "Languages", icon: Code, items: ["Solidity", "Rust", "Move", "Cairo"] },
+                 { title: "Blockchains", icon: FileCode, items: ["Ethereum", "Solana / SVM", "Starknet", "Aptos / Sui"] },
+                 { title: "Expertise", icon: BookOpen, items: ["Cross-chain bridges", "MEV", "DeFi protocols", "Smart contracts"] },
+                 { title: "Tools", icon: Eye, items: ["Foundry", "Anchor", "Fuzzing frameworks", "Symbolic execution"] }
+               ].map((area, index) => (
+                 <Card 
+                   key={area.title} 
+                   className="group bg-gradient-to-br from-card/70 to-card/90 backdrop-blur-sm border border-white/10 
+                              hover:border-primary/30 hover:bg-secondary/20 transition-all duration-300 
+                              transform hover:-translate-y-1.5 shadow-md hover:shadow-primary/15 rounded-xl overflow-hidden"
+                 >
+                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 pt-5 px-5">
+                     <CardTitle className="text-base font-medium text-foreground/90 group-hover:text-primary transition-colors">
+                       {area.title}
+                     </CardTitle>
+                     <area.icon className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                   </CardHeader>
+                   <CardContent className="px-5 pb-5">
+                     <ul className="text-muted-foreground text-sm space-y-2">
+                       {area.items.map((item, itemIndex) => (
+                         <li key={itemIndex} className="flex items-center gap-2 group/item">
+                           <span className="h-1 w-1 rounded-full bg-primary/60 group-hover/item:bg-primary transition-colors inline-block shrink-0"></span> 
+                           <span className="group-hover/item:text-foreground/90 transition-colors duration-200 inline-block">{item}</span>
+                         </li>
+                       ))}
+                     </ul>
+                   </CardContent>
+                 </Card>
+               ))}
+             </div>
+           </div>
           
-          <div className="text-center mt-10">
+          {/* Link to full portfolio */}
+          <div className="text-center animate-fade-up [animation-delay:500ms]">
             <a 
               href="https://github.com/ArjunaSec/Audits"
               target="_blank" 
               rel="noopener noreferrer"
-              className="inline-flex items-center text-primary hover:underline animate-fade-up [animation-delay:500ms]"
+              className="inline-flex items-center text-primary hover:underline group"
             >
-              View our complete portfolio <ArrowRight className="ml-1 h-4 w-4" />
+              View our complete portfolio on GitHub
+              <ArrowRight className="ml-1.5 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </a>
           </div>
         </div>
