@@ -5,80 +5,24 @@ import { Search, Tag, CalendarDays, Clock, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const featuredPost = {
-  id: "code-examples",
-  title: "Understanding Smart Contract Security with Code Examples",
-  excerpt: "Explore smart contract security with syntax-highlighted code examples across Rust, JavaScript, Solidity, and more.",
-  coverImage: "bg-gradient-to-br from-[rgba(255,13,104,0.24)] to-[rgba(204,10,83,0.24)]",
-  date: "July 12, 2023",
+  id: "1",
+  title: "Awesome Solana Security Checklist",
+  excerpt: "A comprehensive collection of security best practices for Solana program development. This checklist covers common vulnerabilities and their prevention techniques to help developers build secure Solana applications.",
+  coverImage: "/blogCovers/temp.jpeg",
+  date: "April 17, 2025",
   readTime: "12 min read",
-  author: "Alex Johnson",
+  author: "Calc1f4r",
+  authorImage: "/authors/calc1f4r.png",
   tags: ["Security", "Solana", "Smart Contracts", "Rust"]
 };
 
 const blogPosts = [
-  {
-    id: 2,
-    title: "Best Practices for Securing Rust Applications",
-    excerpt: "Learn essential techniques for writing secure Rust code for blockchain applications.",
-    coverImage: "bg-gradient-to-r from-blue-500/20 to-purple-500/20",
-    date: "May 28, 2023",
-    readTime: "6 min read",
-    author: "Sarah Chen",
-    tags: ["Rust", "Security"]
-  },
-  {
-    id: 3,
-    title: "Understanding Solana's Programming Model",
-    excerpt: "A deep dive into Solana's unique approach to smart contract development and execution.",
-    coverImage: "bg-gradient-to-r from-green-500/20 to-blue-500/20",
-    date: "May 15, 2023",
-    readTime: "10 min read",
-    author: "Michael Rodriguez",
-    tags: ["Solana", "Development"]
-  },
-  {
-    id: 3,
-    title: "Common Attack Vectors in DeFi Protocols",
-    excerpt: "Analyzing recent DeFi hacks and strategies to protect your protocol from similar exploits.",
-    coverImage: "bg-gradient-to-r from-red-500/20 to-orange-500/20",
-    date: "April 20, 2023",
-    readTime: "12 min read",
-    author: "David Kumar",
-    tags: ["DeFi", "Security"]
-  },
-  {
-    id: 4,
-    title: "Implementing Secure Upgradeable Contracts",
-    excerpt: "Methods for creating upgradeable smart contracts without compromising security.",
-    coverImage: "bg-gradient-to-r from-purple-500/20 to-pink-500/20",
-    date: "April 5, 2023",
-    readTime: "7 min read",
-    author: "Emma Wilson",
-    tags: ["Smart Contracts", "Development"]
-  },
-  {
-    id: 5,
-    title: "Audit Case Study: Cross-chain Bridge Vulnerability",
-    excerpt: "A detailed breakdown of how we identified and helped fix a critical vulnerability in a cross-chain bridge.",
-    coverImage: "bg-gradient-to-r from-yellow-500/20 to-green-500/20",
-    date: "March 22, 2023",
-    readTime: "9 min read",
-    author: "Alex Johnson",
-    tags: ["Audit", "Case Study"]
-  },
-  {
-    id: 6,
-    title: "Optimizing Gas Usage in Solana Programs",
-    excerpt: "Techniques for writing efficient Solana programs that minimize computational resource consumption.",
-    coverImage: "bg-gradient-to-r from-teal-500/20 to-blue-500/20",
-    date: "March 10, 2023",
-    readTime: "5 min read",
-    author: "Jessica Park",
-    tags: ["Solana", "Optimization"]
-  },
 ];
 
 const Blog = () => {
+  const hasBlogPosts = blogPosts.length > 0;
+  const hasFeaturedPost = !!featuredPost;
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Hero Section */}
@@ -102,125 +46,141 @@ const Blog = () => {
         </div>
       </GridBackgroundDemo>
 
-      {/* Featured Post */}
-      <section className="py-12">
-        <div className="container px-4 mx-auto">
-          <h2 className="text-2xl font-bold mb-6">Featured Article</h2>
-          
-          <Link to={`/blog/${featuredPost.id}`} className="block">
-            <div className="glass-card rounded-xl overflow-hidden transition-all hover:scale-[1.01] hover:bg-secondary/30 cursor-pointer">
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-                <div className={`col-span-2 ${featuredPost.coverImage} h-full min-h-[200px] md:min-h-[300px]`} />
-                <div className="col-span-3 p-6">
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {featuredPost.tags.map(tag => (
-                      <span key={tag} className="text-xs px-2 py-1 rounded-full bg-primary/20 text-primary">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                  
-                  <h3 className="text-2xl md:text-3xl font-bold mb-3">
-                    {featuredPost.title}
-                  </h3>
-                  
-                  <p className="text-muted-foreground mb-5">
-                    {featuredPost.excerpt}
-                  </p>
-                  
-                  <div className="flex flex-wrap items-center text-sm text-muted-foreground mb-6 gap-4">
-                    <div className="flex items-center">
-                      <User className="h-4 w-4 mr-1" />
-                      {featuredPost.author}
-                    </div>
-                    <div className="flex items-center">
-                      <CalendarDays className="h-4 w-4 mr-1" />
-                      {featuredPost.date}
-                    </div>
-                    <div className="flex items-center">
-                      <Clock className="h-4 w-4 mr-1" />
-                      {featuredPost.readTime}
-                    </div>
-                  </div>
-                  
-                  <Button>Read Article</Button>
-                </div>
-              </div>
-            </div>
-          </Link>
-        </div>
-      </section>
-
-      {/* Latest Posts */}
-      <section className="py-12 bg-black/30">
-        <div className="container px-4 mx-auto">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-2xl font-bold">Latest Articles</h2>
-            <div className="flex gap-2 overflow-x-auto pb-2 hide-scrollbar">
-              <Button variant="outline" size="sm" className="bg-primary/10 text-primary">All</Button>
-              <Button variant="outline" size="sm">Security</Button>
-              <Button variant="outline" size="sm">Solana</Button>
-              <Button variant="outline" size="sm">Rust</Button>
-              <Button variant="outline" size="sm">DeFi</Button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {blogPosts.map((post) => (
-              <Link 
-                key={post.id} 
-                to={`/blog/${post.id}`}
-                className="block"
-              >
-                <div className="glass-card rounded-xl overflow-hidden transition-all hover:scale-[1.02] hover:bg-secondary/30 cursor-pointer h-full">
-                  <div className={`h-48 ${post.coverImage}`} />
-                  <div className="p-5">
+      {/* Featured Post - Only show if featured post exists */}
+      {hasFeaturedPost && (
+        <section className="py-12">
+          <div className="container px-4 mx-auto">
+            <h2 className="text-2xl font-bold mb-6">Featured Article</h2>
+            
+            <Link to={`/blog/${featuredPost.id}`} className="block">
+              <div className="glass-card rounded-xl overflow-hidden transition-all hover:scale-[1.01] hover:bg-secondary/30 cursor-pointer">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+                  <div className={`col-span-2 ${featuredPost.coverImage} h-full min-h-[200px] md:min-h-[300px]`} />
+                  <div className="col-span-3 p-6">
                     <div className="flex flex-wrap gap-2 mb-3">
-                      {post.tags.map(tag => (
-                        <span key={`${post.id}-${tag}`} className="text-xs px-2 py-1 rounded-full bg-primary/20 text-primary">
+                      {featuredPost.tags.map(tag => (
+                        <span key={tag} className="text-xs px-2 py-1 rounded-full bg-primary/20 text-primary">
                           {tag}
                         </span>
                       ))}
                     </div>
                     
-                    <h3 className="text-xl font-semibold mb-3">
-                      {post.title}
+                    <h3 className="text-2xl md:text-3xl font-bold mb-3">
+                      {featuredPost.title}
                     </h3>
                     
-                    <p className="text-muted-foreground mb-5 text-sm">
-                      {post.excerpt}
+                    <p className="text-muted-foreground mb-5">
+                      {featuredPost.excerpt}
                     </p>
                     
-                    <div className="flex justify-between items-center text-xs text-muted-foreground">
+                    <div className="flex flex-wrap items-center text-sm text-muted-foreground mb-6 gap-4">
                       <div className="flex items-center">
-                        <User className="h-3 w-3 mr-1" />
-                        {post.author}
+                        <User className="h-4 w-4 mr-1" />
+                        {featuredPost.author}
                       </div>
                       <div className="flex items-center">
-                        <Clock className="h-3 w-3 mr-1" />
-                        {post.readTime}
+                        <CalendarDays className="h-4 w-4 mr-1" />
+                        {featuredPost.date}
+                      </div>
+                      <div className="flex items-center">
+                        <Clock className="h-4 w-4 mr-1" />
+                        {featuredPost.readTime}
+                      </div>
+                    </div>
+                    
+                    <Button>Read Article</Button>
+                  </div>
+                </div>
+              </div>
+            </Link>
+          </div>
+        </section>
+      )}
+
+      {/* Latest Posts - Only show if there are blog posts */}
+      {hasBlogPosts && (
+        <section className="py-12 bg-black/30">
+          <div className="container px-4 mx-auto">
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="text-2xl font-bold">Latest Articles</h2>
+              <div className="flex gap-2 overflow-x-auto pb-2 hide-scrollbar">
+                <Button variant="outline" size="sm" className="bg-primary/10 text-primary">All</Button>
+                <Button variant="outline" size="sm">Security</Button>
+                <Button variant="outline" size="sm">Solana</Button>
+                <Button variant="outline" size="sm">Rust</Button>
+                <Button variant="outline" size="sm">DeFi</Button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {blogPosts.map((post) => (
+                <Link 
+                  key={post.id} 
+                  to={`/blog/${post.id}`}
+                  className="block"
+                >
+                  <div className="glass-card rounded-xl overflow-hidden transition-all hover:scale-[1.02] hover:bg-secondary/30 cursor-pointer h-full">
+                    <div className={`h-48 ${post.coverImage}`} />
+                    <div className="p-5">
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {post.tags.map(tag => (
+                          <span key={`${post.id}-${tag}`} className="text-xs px-2 py-1 rounded-full bg-primary/20 text-primary">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                      
+                      <h3 className="text-xl font-semibold mb-3">
+                        {post.title}
+                      </h3>
+                      
+                      <p className="text-muted-foreground mb-5 text-sm">
+                        {post.excerpt}
+                      </p>
+                      
+                      <div className="flex justify-between items-center text-xs text-muted-foreground">
+                        <div className="flex items-center">
+                          <User className="h-3 w-3 mr-1" />
+                          {post.author}
+                        </div>
+                        <div className="flex items-center">
+                          <Clock className="h-3 w-3 mr-1" />
+                          {post.readTime}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </Link>
-            ))}
-          </div>
+                </Link>
+              ))}
+            </div>
 
-          {/* Pagination */}
-          <div className="mt-12 flex justify-center">
-            <nav className="flex items-center gap-1">
-              <Button variant="outline" size="sm" disabled>Previous</Button>
-              <Button variant="outline" size="sm" className="bg-primary/10 text-primary">1</Button>
-              <Button variant="outline" size="sm">2</Button>
-              <Button variant="outline" size="sm">3</Button>
-              <span className="mx-2">...</span>
-              <Button variant="outline" size="sm">5</Button>
-              <Button variant="outline" size="sm">Next</Button>
-            </nav>
+            {/* Pagination */}
+            <div className="mt-12 flex justify-center">
+              <nav className="flex items-center gap-1">
+                <Button variant="outline" size="sm" disabled>Previous</Button>
+                <Button variant="outline" size="sm" className="bg-primary/10 text-primary">1</Button>
+                <Button variant="outline" size="sm">2</Button>
+                <Button variant="outline" size="sm">3</Button>
+                <span className="mx-2">...</span>
+                <Button variant="outline" size="sm">5</Button>
+                <Button variant="outline" size="sm">Next</Button>
+              </nav>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
+
+      {/* Empty State - Show when no posts are available */}
+      {!hasBlogPosts && !hasFeaturedPost && (
+        <section className="py-12">
+          <div className="container px-4 mx-auto text-center">
+            <h2 className="text-2xl font-bold mb-4">No Articles Yet</h2>
+            <p className="text-muted-foreground mb-6">
+              We're working on creating valuable content for you. Check back soon!
+            </p>
+          </div>
+        </section>
+      )}
 
       {/* Newsletter Section */}
       <section className="py-16">

@@ -7,6 +7,194 @@ import NorthernLights from '@/components/ui/aceternity/NorthernLights';
 // Sample blog posts data
 const blogPosts: BlogPostType[] = [
   {
+    id: 4,
+    title: "Awesome Solana Security Checklist",
+    content: `
+      <p class="mb-4">A comprehensive collection of security best practices for Solana program development. This checklist covers common vulnerabilities and their prevention techniques to help developers build secure Solana applications.</p>
+      
+      <h2 class="text-2xl font-bold mt-8 mb-4">Account Validations</h2>
+      
+      <h3 class="text-xl font-bold mt-6 mb-3">Signer Checks</h3>
+      <p class="mb-4">Missing signer validation is a common vulnerability in Solana programs:</p>
+      
+      <pre class="bg-black/30 p-4 rounded-md mb-4 overflow-x-auto">
+// ❌ Bad
+let account = ctx.accounts.account;
+
+// ✅ Good - Native
+require!(account.is_signer, ErrorCode::MissingSigner);
+
+// ✅ Good - Anchor
+#[account(
+    constraint = account.is_signer @ ErrorCode::MissingSigner
+)]
+pub account: Account<AccountType>,
+
+// ✅ Good - Anchor 
+pub creator: Signer<'info>,
+      </pre>
+      
+      <p class="mb-4"><strong>Impact:</strong> Without signer validation, any account can be used in place of the intended signer, potentially allowing unauthorized access to program functions.</p>
+      
+      <h3 class="text-xl font-bold mt-6 mb-3">Writer Checks</h3>
+      <p class="mb-4">Missing writer validation can lead to transaction failures:</p>
+      
+      <pre class="bg-black/30 p-4 rounded-md mb-4 overflow-x-auto">
+// ❌ Bad
+let account = ctx.accounts.account;
+
+// ✅ Good - Native
+require!(account.is_writable, ErrorCode::AccountNotWritable);
+
+// ✅ Good - Anchor
+#[account(
+    mut,
+    constraint = account.is_writable @ ErrorCode::AccountNotWritable
+)]
+pub account: Account<AccountType>,
+
+// ✅ Good - Anchor 
+#[account(mut)]
+pub creator: AccountInfo<'info>,
+      </pre>
+      
+      <p class="mb-4"><strong>Impact:</strong> Attempting to modify a non-writable account will cause transaction failure. Always verify account mutability before attempting modifications.</p>
+      
+      <h3 class="text-xl font-bold mt-6 mb-3">Owner Checks</h3>
+      <p class="mb-4">Missing owner validation can allow malicious accounts to be used:</p>
+      
+      <pre class="bg-black/30 p-4 rounded-md mb-4 overflow-x-auto">
+// ❌ Bad
+let account = ctx.accounts.account;
+
+// ✅ Good - Native
+require!(account.owner == program_id, ErrorCode::InvalidOwner);
+
+// ✅ Good - Anchor explicitly
+#[account(
+    constraint = account.owner == program_id @ ErrorCode::InvalidOwner
+)]
+pub account: Account<AccountType>,
+
+// ✅ Good - Anchor: if you use system program accounts or PDA derived using the same program
+pub pool: <Account<'info, Pool>>, // pool will be validated to be owned by our program id 
+pub token_2022_program: Program<'info, Token2022>, // system owned accounts will be validated by anchor
+      </pre>
+      
+      <p class="mb-4"><strong>Impact:</strong> Without owner validation, malicious accounts owned by other programs could be used, potentially leading to unauthorized state modifications or data theft.</p>
+      
+      <h3 class="text-xl font-bold mt-6 mb-3">PDA Validation</h3>
+      <p class="mb-4">Missing proper PDA validation can compromise security:</p>
+      
+      <pre class="bg-black/30 p-4 rounded-md mb-4 overflow-x-auto">
+// ❌ Bad
+let pda = ctx.accounts.pda;
+
+// ✅ Good - Native
+let (expected_pda, _bump) = Pubkey::find_program_address(
+    &[b"prefix", other_seed],
+    program_id
+);
+require!(pda.key() == expected_pda, ErrorCode::InvalidPDA);
+
+// ✅ Good - Anchor
+#[account(
+    seeds = [b"prefix", other_seed],
+    bump,
+    constraint = pda.key() == Pubkey::find_program_address(
+        &[b"prefix", other_seed],
+        program_id
+    ).0 @ ErrorCode::InvalidPDA
+)]
+pub pda: Account<PdaAccount>,
+      </pre>
+      
+      <h2 class="text-2xl font-bold mt-8 mb-4">Arithmetic and Data Handling Security</h2>
+      
+      <h3 class="text-xl font-bold mt-6 mb-3">Integer Overflow/Underflow Protection</h3>
+      <p class="mb-4">Always use checked arithmetic operations:</p>
+      
+      <pre class="bg-black/30 p-4 rounded-md mb-4 overflow-x-auto">
+// ❌ Bad: Unchecked arithmetic
+let balance = account.balance + amount;
+
+// ✅ Good: Checked arithmetic
+let balance = account.balance.checked_add(amount)
+    .ok_or(ProgramError::Overflow)?;
+      </pre>
+      
+      <p class="mb-4"><strong>Note:</strong> Always verify your <code>Cargo.toml</code> has <code>overflow-checks = true</code> in the <code>[profile.release]</code> section.</p>
+      
+      <h3 class="text-xl font-bold mt-6 mb-3">Division Safety</h3>
+      <p class="mb-4">Always check for zero before division:</p>
+      
+      <pre class="bg-black/30 p-4 rounded-md mb-4 overflow-x-auto">
+// ❌ Bad: Unchecked division
+let result = total / divisor;
+
+// ✅ Good: Check for zero before division
+if divisor == 0 {
+    return Err(ProgramError::InvalidArgument);
+}
+let result = total / divisor;
+      </pre>
+      
+      <h2 class="text-2xl font-bold mt-8 mb-4">Seed Collisions</h2>
+      
+      <p class="mb-4">Seed collisions occur when two different sets of seed values generate the same Program Derived Address (PDA):</p>
+      
+      <pre class="bg-black/30 p-4 rounded-md mb-4 overflow-x-auto">
+// ❌ Bad - Using simple seeds that might collide
+#[account(
+    init,
+    payer = user,
+    space = 8 + size,
+    seeds = [b"vote", session_id.as_bytes()],
+    bump
+)]
+pub vote_account: Account<'info, VoteAccount>,
+
+// ✅ Good - Using unique prefixes and additional context in seeds
+#[account(
+    init,
+    payer = user,
+    space = 8 + size,
+    seeds = [b"vote_session", organizer.key().as_ref(), session_id.as_bytes()],
+    bump
+)]
+pub vote_account: Account<'info, VoteAccount>,
+      </pre>
+      
+      <p class="mb-4">To mitigate seed collision vulnerabilities:</p>
+      <ul class="list-disc pl-5 mb-4">
+        <li class="mb-2">Use unique prefixes for seeds across different PDAs in the same program</li>
+        <li class="mb-2">Include additional contextual data in seeds (e.g., user public keys, timestamps)</li>
+        <li class="mb-2">When using user-supplied data as seeds, validate its uniqueness</li>
+        <li class="mb-2">Consider using a nonce value as part of the seed to ensure uniqueness</li>
+      </ul>
+      
+      <h2 class="text-2xl font-bold mt-8 mb-4">CPI Issues</h2>
+      
+      <p class="mb-4">Cross-Program Invocations (CPIs) must be performed carefully to avoid security issues. Always validate all accounts passed to CPIs and verify the program being called is the expected one.</p>
+      
+      <h2 class="text-2xl font-bold mt-8 mb-4">Token Issues</h2>
+      
+      <p class="mb-4">Common token-related security issues include:</p>
+      <ul class="list-disc pl-5 mb-4">
+        <li class="mb-2">Missing check for mint close authority extension</li>
+        <li class="mb-2">Missing check for mint freeze authority</li>
+        <li class="mb-2">Fee on transfer extension not properly handled</li>
+      </ul>
+      
+      <p class="mb-4">By following these security best practices, developers can significantly reduce the risk of vulnerabilities in their Solana programs and build more secure applications on the Solana blockchain.</p>
+    `,
+    coverImage: "bg-gradient-to-br from-purple-500/30 to-pink-500/30",
+    date: "July 10, 2023",
+    readTime: "12 min read",
+    author: "Arjuna Security",
+    tags: ["Security", "Solana", "Checklist"]
+  },
+  {
     id: 1,
     title: "Ultimate Solana Security Checklist",
     content: `
