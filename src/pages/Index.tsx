@@ -71,62 +71,6 @@ const Index = () => {
         </div>
       </GridBackgroundDemo>
 
-      {/* Services Section */}
-      <NorthernLights className="py-20">
-        <div className="container px-4 mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 animate-fade-up">Our Services</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto animate-fade-up [animation-delay:200ms]">
-              Comprehensive security assessment services tailored to blockchain projects
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="animate-fade-up [animation-delay:300ms]">
-              <GlowingCard className="hover:scale-105 transition-all duration-300">
-                <div className="flex flex-col items-center text-center">
-                  <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 animate-pulse-glow">
-                    <FileCode className="h-6 w-6 text-primary" />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2">Smart Contract Audits</h3>
-                  <p className="text-muted-foreground">
-                    In-depth security reviews of Solana smart contracts to identify vulnerabilities and ensure safety.
-                  </p>
-                </div>
-              </GlowingCard>
-            </div>
-
-            <div className="animate-fade-up [animation-delay:500ms]">
-              <GlowingCard className="hover:scale-105 transition-all duration-300">
-                <div className="flex flex-col items-center text-center">
-                  <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 animate-pulse-glow">
-                    <Code className="h-6 w-6 text-primary" />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2">Rust Program Analysis</h3>
-                  <p className="text-muted-foreground">
-                    Thorough security assessment of Rust applications and libraries to detect and fix security flaws.
-                  </p>
-                </div>
-              </GlowingCard>
-            </div>
-
-            <div className="animate-fade-up [animation-delay:700ms]">
-              <GlowingCard className="hover:scale-105 transition-all duration-300">
-                <div className="flex flex-col items-center text-center">
-                  <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 animate-pulse-glow">
-                    <Eye className="h-6 w-6 text-primary" />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2">Protocol Review</h3>
-                  <p className="text-muted-foreground">
-                    Comprehensive evaluation of blockchain protocol designs to identify architectural weaknesses.
-                  </p>
-                </div>
-              </GlowingCard>
-            </div>
-          </div>
-        </div>
-      </NorthernLights>
-
       {/* Why Choose Us */}
       <section className="py-20 bg-black/30 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-[rgba(255,13,104,0.04)] to-transparent opacity-50"></div>

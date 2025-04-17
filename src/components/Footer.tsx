@@ -17,17 +17,13 @@ const Footer: React.FC = () => {
               Leading security and auditing services for Solana and Rust applications.
             </p>
             <div className="flex space-x-4">
-              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-stone-500 hover:text-primary">
+              <a href="https://x.com/arjuna_sec" target="_blank" rel="noopener noreferrer" className="text-stone-500 hover:text-primary">
                 <Twitter size={18} />
                 <span className="sr-only">Twitter</span>
               </a>
-              <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-stone-500 hover:text-primary">
+              <a href="https://github.com/ArjunaSec/" target="_blank" rel="noopener noreferrer" className="text-stone-500 hover:text-primary">
                 <Github size={18} />
                 <span className="sr-only">GitHub</span>
-              </a>
-              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-stone-500 hover:text-primary">
-                <Linkedin size={18} />
-                <span className="sr-only">LinkedIn</span>
               </a>
             </div>
           </div>
@@ -56,9 +52,6 @@ const Footer: React.FC = () => {
               <li>
                 <Link to="/audits" className="text-stone-500 hover:text-primary text-sm">Audit Reports</Link>
               </li>
-              <li>
-                <Link to="/blog" className="text-stone-500 hover:text-primary text-sm">Security Best Practices</Link>
-              </li>
             </ul>
           </div>
 
@@ -69,10 +62,7 @@ const Footer: React.FC = () => {
                 <Link to="/" className="text-stone-500 hover:text-primary text-sm">About Us</Link>
               </li>
               <li>
-                <Link to="/" className="text-stone-500 hover:text-primary text-sm">Contact</Link>
-              </li>
-              <li>
-                <Link to="/" className="text-stone-500 hover:text-primary text-sm">Careers</Link>
+                <Link to="https://t.me/calc1f4r" className="text-stone-500 hover:text-primary text-sm">Contact</Link>
               </li>
             </ul>
           </div>
@@ -80,16 +70,8 @@ const Footer: React.FC = () => {
 
         <div className="mt-12 pt-6 border-t border-border flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm text-stone-600">
-            &copy; {new Date().getFullYear()} Arjuna Security. All rights reserved.
+            &copy; {new Date().getFullYear()} Arjuna.  All rights reserved.
           </p>
-          <div className="flex space-x-6 mt-4 md:mt-0">
-            <Link to="/" className="text-xs text-stone-600 hover:text-primary">
-              Privacy Policy
-            </Link>
-            <Link to="/" className="text-xs text-stone-600 hover:text-primary">
-              Terms of Service
-            </Link>
-          </div>
         </div>
       </div>
     </footer>

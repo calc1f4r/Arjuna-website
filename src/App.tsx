@@ -5,7 +5,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 import Index from "./pages/Index";
-import Audits from "./pages/Audits";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import BlogPostWithCode from "./pages/BlogPostWithCode";
@@ -22,7 +21,6 @@ const App = () => (
         <Layout>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/audits" element={<Audits />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/code-examples" element={<BlogPostWithCode />} />
             <Route path="/blog/:id" element={<BlogPost />} />

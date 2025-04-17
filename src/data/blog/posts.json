@@ -11,18 +11,5 @@
     "authorImage": "/authors/calc1f4r.png",
     "tags": ["Security", "Solana", "Smart Contracts", "Rust"],
     "featured": true
-  },
-  {
-    "id": "another-post",
-    "title": "Another Example Post",
-    "excerpt": "This is a short excerpt for another blog post to demonstrate the listing.",
-    "contentPath": "/src/data/blog/content/another-post.md", 
-    "coverImage": "/blogCovers/download (2).jpeg",
-    "date": "2025-04-15",
-    "readTime": "5 min read",
-    "author": "Calc1f4r",
-    "authorImage": "/authors/calc1f4r.png",
-    "tags": ["Example", "WebDev"],
-    "featured": false
   }
 ]
