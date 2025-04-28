@@ -1,142 +1,146 @@
-# Awesome Solana Security Checklist
+# The Ultimate Solana Security Checklist: Keep Your Smart Contracts Safe
 
-A curated collection of resources and best practices for Solana program security by [Arjuna](https://x.com/arjuna_sec).
+Solana's blazing speed and low transaction fees have fueled incredible growth in its DeFi and NFT ecosystems. But with great power comes great responsibility, especially when it comes to security. A single vulnerability in your Solana program can lead to devastating exploits and loss of user funds.
 
-For audits reach out at : [here](https://t.me/calc1f4r)
+This post provides a comprehensive checklist covering common security pitfalls in Solana development, focusing on areas like account validation, CPI handling, arithmetic safety, and more. Whether you're a seasoned Solana dev or just starting, use this guide to audit your code and build more secure applications.
 
-## Account Validations
+## Account Validations: The First Line of Defense
+
+Properly validating accounts is fundamental to Solana program security. Failing to do so can open doors for attackers.
 
 ### Signer Checks
 
-- Missing signer check
+Ensure that accounts expected to sign a transaction actually have signed it.
+
+- **Vulnerability:** Missing signer check.
 
 ```rust
-// ❌ Bad
+// ❌ Bad: No check if 'account' signed the transaction
 let account = ctx.accounts.account;
 
-// ✅ Good - Native
+// ✅ Good - Native: Explicitly require the account to be a signer
 require!(account.is_signer, ErrorCode::MissingSigner);
 
-// ✅ Good - Anchor
+// ✅ Good - Anchor: Use constraints to enforce signer status
 #[account(
     constraint = account.is_signer @ ErrorCode::MissingSigner
 )]
 pub account: Account<AccountType>,
 
-// GOOD - Anchor
+// ✅ Good - Anchor: Use the Signer type for automatic validation
  pub creator: Signer<'info>,
-#[]
 ```
 
-Impact: Without signer validation, any account can be used in place of the intended signer, potentially allowing unauthorized access to program functions.
-
-Reference: https://neodyme.io/en/blog/solana_common_pitfalls/#missing-signer-check
+- **Impact:** Without signer validation, any account can be passed off as the signer, allowing unauthorized actions.
+- **Reference:** [Neodyme: Missing Signer Check](https://neodyme.io/en/blog/solana_common_pitfalls/#missing-signer-check)
 
 ### Writer Checks
 
-- Missing writer check
+Verify that accounts intended for modification are actually mutable.
+
+- **Vulnerability:** Missing writer check.
 
 ```rust
-// ❌ Bad
+// ❌ Bad: No check if 'account' is writable
 let account = ctx.accounts.account;
 
-// ✅ Good - Native
+// ✅ Good - Native: Explicitly require the account to be writable
 require!(account.is_writable, ErrorCode::AccountNotWritable);
 
-// ✅ Good - Anchor
+// ✅ Good - Anchor: Use 'mut' and constraints for writability
 #[account(
     mut,
     constraint = account.is_writable @ ErrorCode::AccountNotWritable
 )]
 pub account: Account<AccountType>,
 
-// ✅ Good - Anchor
-    #[account(mut)]
-    pub creator: AccountInfo<'info>,
+// ✅ Good - Anchor: Use 'mut' on AccountInfo for basic writability expectation
+#[account(mut)]
+pub creator: AccountInfo<'info>, // Note: This checks transaction-level mutability, not ownership/data modification rights.
 ```
 
-Impact: Attempting to modify a non-writable account will cause transaction failure. Always verify account mutability before attempting modifications.
+- **Impact:** Attempting to write to a non-writable account will cause the transaction to fail. Explicit checks prevent unexpected failures.
 
 ### Owner Checks
 
-- Missing owner check
+Confirm that accounts being accessed are owned by the expected program (usually your own program or the system program).
+
+- **Vulnerability:** Missing owner check.
 
 ```rust
-// ❌ Bad
+// ❌ Bad: No check on the owner of 'account'
 let account = ctx.accounts.account;
 
-// ✅ Good - Native
+// ✅ Good - Native: Require the account owner to be the current program_id
 require!(account.owner == program_id, ErrorCode::InvalidOwner);
 
-// ✅ Good - Anchor explictiy
+// ✅ Good - Anchor (Explicit): Use constraints for owner validation
 #[account(
     constraint = account.owner == program_id @ ErrorCode::InvalidOwner
 )]
 pub account: Account<AccountType>,
 
+// ✅ Good - Anchor (Implicit): Anchor types often handle owner checks automatically
+// For PDAs derived by your program or accounts owned by your program:
+pub pool: Account<'info, Pool>, // Validates owner is the current program ID
 
-// Good - Anchor : if you use systemprogram accounts or pda derived using the same program use the anchor type
-pub pool: <Account<'info, Pool>>, // pool will be validated to be owned by the our program id
-
-pub token_2022_program: Program<'info, Token2022>, // system owned accounts will be validated by anchor on its own
-
+// For system-owned accounts like token programs:
+pub token_2022_program: Program<'info, Token2022>, // Validates owner is the Token 2022 program ID
 ```
 
-Impact: Without owner validation, malicious accounts owned by other programs could be used, potentially leading to unauthorized state modifications or data theft.
-
-Reference: https://neodyme.io/en/blog/solana_common_pitfalls/#missing-ownership-check
+- **Impact:** Without owner validation, malicious accounts owned by different programs could be supplied, leading to unauthorized state changes or data access.
+- **Reference:** [Neodyme: Missing Ownership Check](https://neodyme.io/en/blog/solana_common_pitfalls/#missing-ownership-check)
 
 ### PDA Validation
 
-- Missing PDA validation
+Ensure that Program Derived Addresses (PDAs) match their expected derivation seeds and bump.
+
+- **Vulnerability:** Missing PDA validation.
 
 ```rust
-// ❌ Bad
+// ❌ Bad: Using a PDA without verifying its address
 let pda = ctx.accounts.pda;
 
-// ✅ Good - Native
+// ✅ Good - Native: Derive the expected PDA and compare keys
 let (expected_pda, _bump) = Pubkey::find_program_address(
     &[b"prefix", other_seed],
     program_id
 );
 require!(pda.key() == expected_pda, ErrorCode::InvalidPDA);
 
-// ✅ Good - Anchor
+// ✅ Good - Anchor: Use seeds and bump attributes for automatic validation
 #[account(
     seeds = [b"prefix", other_seed],
     bump,
-    constraint = pda.key() == Pubkey::find_program_address(
-        &[b"prefix", other_seed],
-        program_id
-    ).0 @ ErrorCode::InvalidPDA
+    // Optionally add an explicit constraint for belt-and-suspenders validation
+    // constraint = pda.key() == Pubkey::find_program_address(&[b"prefix", other_seed], program_id).0 @ ErrorCode::InvalidPDA
 )]
 pub pda: Account<PdaAccount>,
 ```
 
-Impact: Invalid PDAs could be used to access or modify data meant for specific program-derived addresses, potentially compromising program security.
+- **Impact:** Supplying an incorrect PDA could grant access to or allow modification of the wrong program-controlled data.
 
-## Account Data Reallocation
+## Account Data Reallocation Pitfalls
 
-- Unsafe reallocation without proper memory management
+Reallocating account data requires careful memory management.
+
+- **Vulnerability:** Unsafe reallocation without proper memory management (e.g., not zero-initializing new space).
 
 ```rust
-// ❌ Bad
-// Directly reallocating without proper memory handling
+// ❌ Bad: Directly reallocating without handling potential existing data or zeroing
 account.realloc(new_size, false)?;
 
-// ❌ Bad
-// Reallocating without zero-initialization
+// ❌ Bad: Reallocating potentially larger space without zero-initializing the new portion
 let current_data_size = account.data.borrow().len();
 if current_data_size < new_size {
-    account.realloc(new_size, false)?;
+    account.realloc(new_size, false)?; // New memory region is uninitialized
 }
 
-// ✅ Good
-// Safely reallocating with proper memory management
+// ✅ Good: Safely reallocating and zero-initializing the expanded memory region
 let current_data_size = account.data.borrow().len();
-account.realloc(new_size, false)?;
+account.realloc(new_size, false)?; // Allow realloc even if shrinking (though 'false' means don't zero)
 if current_data_size < new_size {
-    // Zero-initialize the new memory region
+    // Zero-initialize only the *new* part of the buffer
     let data = &mut account.data.borrow_mut();
     for i in current_data_size..new_size {
         data[i] = 0;
@@ -144,54 +148,56 @@ if current_data_size < new_size {
 }
 ```
 
-Impact: Improper memory management during reallocation can lead to memory corruption, uninitialized memory access, or exploitation of sensitive data left in uninitialized memory regions. This can result in security vulnerabilities including potential account takeovers or data leakage.
+- **Impact:** Improper memory handling during reallocation can lead to data corruption, use of uninitialized memory, or leaking sensitive data from previous memory usage.
 
-- Not handling memory allocation failures
+- **Vulnerability:** Not handling memory allocation failures.
 
 ```rust
-// ❌ Bad
-// No error handling for reallocation failures
+// ❌ Bad: Ignoring potential errors from realloc
 account.realloc(new_size, false);
 
-// ✅ Good
-// Proper error handling for reallocation
+// ✅ Good: Handling potential reallocation errors
 account.realloc(new_size, false)
-    .map_err(|_| ProgramError::AccountDataTooSmall)?;
+    .map_err(|_| ProgramError::AccountDataTooSmall)?; // Or a more specific error
 ```
 
-Impact: Failing to handle memory allocation errors can lead to unexpected program behavior, potential vulnerabilities, and denial of service attacks.
+- **Impact:** Ignoring allocation failures can cause unexpected program termination or leave the program in an inconsistent state.
 
 ## Lamports Transfer Out of PDA
 
-- Missing rent exempt after transfer check
+Transferring SOL out of PDAs requires specific checks.
+
+- **Vulnerability:** Missing rent-exempt check after transfer.
 
 ```rust
-// ❌ Bad
+// ❌ Bad: Decreasing lamports without checking rent exemption
 let pda = ctx.accounts.pda;
-pda.try_borrow_mut_lamports()? -= amount;
+**pda.try_borrow_mut_lamports()? -= amount; // Might fall below rent minimum
 
-// ✅ Good -
-let pda = ctx.accounts.pda;
+// ✅ Good: Check if remaining balance meets rent exemption
+let pda = &ctx.accounts.pda;
 let rent = Rent::get()?;
 let min_rent = rent.minimum_balance(pda.data_len());
 let current_lamports = pda.lamports();
+
 require!(
-    current_lamports - amount >= min_rent,
+    current_lamports.checked_sub(amount).ok_or(ErrorCode::CalculationFailure)? >= min_rent,
     ErrorCode::InsufficientFundsForRent
 );
-pda.try_borrow_mut_lamports()? -= amount;
 
+**pda.try_borrow_mut_lamports()? -= amount;
+**recipient.try_borrow_mut_lamports()? += amount; // Don't forget the recipient!
 ```
 
-Impact: The PDA will be garbage collected if it falls below the minimum rent-exempt balance, potentially causing data loss and program state inconsistencies.
+- **Impact:** If a PDA's balance falls below the rent-exempt minimum, the Solana runtime will garbage collect it, leading to data loss.
 
-- Using signer seeds instead of try borrow lamports
+- **Vulnerability:** Using signer seeds for PDA SOL transfers (incorrect method).
 
 ```rust
-// ❌ Bad
-let pda = ctx.accounts.pda;
+// ❌ Bad: Attempting system_program::transfer from a PDA using seeds - this won't work
+let pda = &ctx.accounts.pda;
 let seeds = &[b"prefix", other_seed];
-let signer = &[&seeds[..], &[bump]];
+let signer_seeds = &[&seeds[..]]; // Missing the bump!
 system_program::transfer(
     CpiContext::new_with_signer(
         ctx.accounts.system_program.to_account_info(),
@@ -199,496 +205,395 @@ system_program::transfer(
             from: pda.to_account_info(),
             to: recipient.to_account_info(),
         },
-        signer,
+        signer_seeds,
     ),
     amount,
 )?;
 
-// ✅ Good - Native
-let pda = ctx.accounts.pda;
-pda.try_borrow_mut_lamports()? -= amount;
-recipient.try_borrow_mut_lamports()? += amount;
+// ✅ Good - Native: Directly modify lamports (requires account mutability)
+let pda = &ctx.accounts.pda;
+**pda.try_borrow_mut_lamports()? -= amount;
+**recipient.try_borrow_mut_lamports()? += amount;
 ```
 
-Impact: Using signer seeds for transfers from a pda won't succeed, as only system program can only deduct balances.
+- **Impact:** Only the System Program can directly debit SOL from accounts. Programs must modify the `lamports` field directly for PDAs they own. Trying to use `system_program::transfer` with PDA seeds will fail.
+- **Reference:** [Solana Cookbook: Transferring SOL](https://solanacookbook.com/references/programs.html#how-to-transfer-sol-in-a-program)
 
-Reference: https://solanacookbook.com/references/programs.html#how-to-transfer-sol-in-a-program
+## CPI (Cross-Program Invocation) Issues
 
-## CPI Issues
+Interacting with other programs requires careful handling of accounts and seeds.
 
-- Right order of CPI accounts not validated
+- **Vulnerability:** Incorrect order of accounts in CPI calls.
 
 ```rust
-// ❌ Vulnerable: Incorrect account ordering in CPI call.
-// The accounts are passed in an order that does not match the expected order of the callee.
-let accounts = vec![
-    // WRONG: 'account2' is placed first instead of 'account1'
-    ctx.accounts.account2.to_account_info(),
+// ❌ Bad: Account order doesn't match the callee program's expectation
+let accounts_vector = vec![
+    ctx.accounts.account2.to_account_info(), // Wrong order
     ctx.accounts.account1.to_account_info(),
 ];
-let cpi_accounts = accounts.as_slice();
+// This approach is generally discouraged; prefer strongly-typed CPI structs
 
+// ✅ Good: Using generated CPI structs ensures correct ordering and types
 other_program::cpi::some_instruction(
     CpiContext::new(
         ctx.accounts.other_program.to_account_info(),
-        other_program::cpi::SomeInstruction { accounts: cpi_accounts },
-    ),
-)?;
-
-// 🟢 Correct way
-
-other_program::cpi::some_instruction(
-    CpiContext::new(
-        ctx.accounts.other_program.to_account_info(),
-        other_program::cpi::SomeInstruction {
+        // This struct enforces the correct fields and types
+        other_program::cpi::accounts::SomeInstruction {
             account1: ctx.accounts.account1.to_account_info(),
             account2: ctx.accounts.account2.to_account_info(),
         },
     ),
-)?;
-
-
-```
-
-Impact: Incorrect account ordering in CPI calls can lead to unexpected behavior, mainly tx failures.
-
-- Missing bump value in signer seeds
-
-```rust
-// ❌ Bad - Missing bump value in signer seeds
-let seeds = &[b"prefix", other_seed];
-let signer = &[&seeds[..]]; // Missing bump value
-system_program::transfer(
-    CpiContext::new_with_signer(
-        ctx.accounts.system_program.to_account_info(),
-        system_program::Transfer {
-            from: pda.to_account_info(),
-            to: recipient.to_account_info(),
-        },
-        signer,
-    ),
-    amount,
-)?;
-
-// ✅ Good - Include bump value in signer seeds
-let (pda, bump) = Pubkey::find_program_address(
-    &[b"prefix", other_seed],
-    program_id
-);
-let seeds = &[b"prefix", other_seed];
-let signer = &[&seeds[..], &[bump]];
-system_program::transfer(
-    CpiContext::new_with_signer(
-        ctx.accounts.system_program.to_account_info(),
-        system_program::Transfer {
-            from: pda.to_account_info(),
-            to: recipient.to_account_info(),
-        },
-        signer,
-    ),
-    amount,
+    // instruction arguments...
 )?;
 ```
 
-Impact: Without including the bump value in signer seeds, the PDA signature verification will fail, causing the transaction to revert.
+- **Impact:** Incorrect account ordering usually leads to transaction failures as the callee program receives unexpected accounts.
 
-- Incorrect or missing seeds in signer seeds
+- **Vulnerability:** Missing bump seed in CPI signer seeds.
 
 ```rust
-// ❌ Bad - Missing required seed
-let seeds = &[b"prefix"]; // Missing other_seed
-let signer = &[&seeds[..], &[bump]];
+// ❌ Bad: Forgetting the bump seed when creating signer seeds for a PDA
+let seeds = &[b"prefix", other_seed];
+let signer_seeds = &[&seeds[..]]; // Missing the bump!
 
-// ❌ Bad - Incorrect seed order
+// Invoke CPI with signer_seeds... (This will fail signature verification)
+
+// ✅ Good: Including the bump seed
+let seeds = &[b"prefix", other_seed];
+let bump = ctx.accounts.pda.bump; // Assuming bump is stored or passed
+let signer_seeds = &[&seeds[..], &[bump]];
+
+// Invoke CPI with correct signer_seeds...
+```
+
+- **Impact:** PDA signature verification will fail if the bump seed isn't included, causing the CPI call to revert.
+
+- **Vulnerability:** Incorrect or missing seeds in CPI signer seeds.
+
+```rust
+// ❌ Bad - Missing a required seed:
+let seeds = &[b"prefix"]; // Missing 'other_seed'
+let signer_seeds = &[&seeds[..], &[bump]];
+
+// ❌ Bad - Incorrect seed order:
 let seeds = &[other_seed, b"prefix"]; // Wrong order
-let signer = &[&seeds[..], &[bump]];
+let signer_seeds = &[&seeds[..], &[bump]];
 
-// ✅ Good - Correct seeds in proper order
-let (pda, bump) = Pubkey::find_program_address(
-    &[b"prefix", other_seed],
-    program_id
-);
+// ✅ Good - Correct seeds in the correct order:
 let seeds = &[b"prefix", other_seed];
-let signer = &[&seeds[..], &[bump]];
+let bump = ctx.accounts.pda.bump;
+let signer_seeds = &[&seeds[..], &[bump]];
 ```
 
-Impact: Incorrect or missing seeds in signer seeds will cause PDA signature verification to fail, potentially causing transaction failures.
+- **Impact:** Using incorrect or wrongly ordered seeds will cause PDA signature verification to fail.
 
-- Arbitrary CPI
+- **Vulnerability:** Arbitrary CPI (calling untrusted programs).
 
 ```rust
-// ❌ Bad
-let arbitrary_program = ctx.accounts.arbitrary_program;
-let arbitrary_accounts = ctx.accounts.arbitrary_accounts;
-arbitrary_program::cpi::arbitrary_instruction(
-    CpiContext::new(
-        arbitrary_program.to_account_info(),
-        arbitrary_program::cpi::ArbitraryInstruction {
-            accounts: arbitrary_accounts,
-        },
-    ),
-)?;
+// ❌ Bad: Calling a program address provided directly by the user without validation
+let arbitrary_program = &ctx.accounts.arbitrary_program; // Could be any program
+// Call arbitrary_program...
 
-// ✅ Good - Native
-let known_program = ctx.accounts.known_program;
+// ✅ Good - Native: Check the program ID against a known constant
+let known_program = &ctx.accounts.known_program;
 require!(
     known_program.key() == KNOWN_PROGRAM_ID,
-    ErrorCode::InvalidProgram
+    ErrorCode::InvalidProgramId
 );
-known_program::cpi::safe_instruction(
-    CpiContext::new(
-        known_program.to_account_info(),
-        known_program::cpi::SafeInstruction {
-            accounts: ctx.accounts.safe_accounts,
-        },
-    ),
-)?;
+// Call known_program...
 
-// ✅ Good - Anchor
+// ✅ Good - Anchor: Use the Program<'info, T> type for automatic ID check
 #[account(
-    constraint = known_program.key() == KNOWN_PROGRAM_ID @ ErrorCode::InvalidProgram
+    // Anchor automatically checks if known_program.key() == T::id()
+    // Optionally add constraint for extra check or custom error
+    // constraint = known_program.key() == KNOWN_PROGRAM_ID @ ErrorCode::InvalidProgramId
 )]
-pub known_program: Program<'info, KnownProgram>,
+pub known_program: Program<'info, KnownProgram>, // KnownProgram should implement anchor_lang::Id
 ```
 
-Impact: Allowing arbitrary CPI calls can enable malicious programs to execute unauthorized operations or manipulate program state through untrusted external calls.
+- **Impact:** Allowing calls to arbitrary programs enables attackers to execute malicious code within the context of your transaction, potentially draining funds or corrupting state.
 
-## Unvalidated account
+## Unvalidated System Accounts
 
-- Missing check for rent account to be the same
+Crucial system accounts like Rent, Token Program, etc., must be validated.
+
+- **Vulnerability:** Missing check for the Rent sysvar account.
 
 ```rust
-// ❌ Bad
-let rent = ctx.accounts.rent;
+// ❌ Bad: Assuming the provided account is the correct Rent sysvar
+let rent_account = &ctx.accounts.rent;
 
-// ✅ Good - Native
+// ✅ Good - Native: Check against the known Rent sysvar ID
 require!(
     ctx.accounts.rent.key() == sysvar::rent::ID,
     ErrorCode::InvalidRentAccount
 );
 
-// ✅ Good - Anchor
+// ✅ Good - Anchor: Use the Sysvar<'info, Rent> type
 #[account(
-    constraint = rent.key() == sysvar::rent::ID @ ErrorCode::InvalidRentAccount
+    // Anchor automatically checks key == Rent::id()
+    // constraint = rent.key() == sysvar::rent::ID @ ErrorCode::InvalidRentAccount // Optional explicit check
 )]
 pub rent: Sysvar<'info, Rent>,
 ```
 
-Impact: Using an incorrect rent account could lead to incorrect rent calculations and potential security vulnerabilities.
+- **Impact:** Using a fake Rent account could lead to incorrect rent calculations or bypass rent-exemption logic.
 
 ### Token Program Check
 
-- Missing check for token program
+- **Vulnerability:** Missing check for the Token Program ID (SPL Token or Token-2022).
 
 ```rust
-// ❌ Bad
-let token_program = ctx.accounts.token_program;
+// ❌ Bad: Assuming the provided account is the correct Token Program
+let token_program = &ctx.accounts.token_program;
 
-// ✅ Good - Native
+// ✅ Good - Native: Check against the known SPL Token ID
 require!(
-    ctx.accounts.token_program.key() == spl_token::ID,
+    ctx.accounts.token_program.key() == spl_token::ID, // Or token_2022::ID
     ErrorCode::InvalidTokenProgram
 );
 
-// ✅ Good - Anchor
+// ✅ Good - Anchor: Use the Program<'info, Token> type (or Token2022)
 #[account(
-    constraint = token_program.key() == spl_token::ID @ ErrorCode::InvalidTokenProgram
+    // Anchor checks key == Token::id()
+    // constraint = token_program.key() == spl_token::ID @ ErrorCode::InvalidTokenProgram // Optional
 )]
-pub token_program: Program<'info, Token>,
+pub token_program: Program<'info, Token>, // Or Program<'info, Token2022>
 ```
 
-Impact: Without validating the token program, malicious token programs could be used to manipulate token operations.
+- **Impact:** An attacker could provide a malicious program disguised as the Token Program to execute arbitrary code during token operations.
 
 ### Sysvar Account Check
 
-- Missing check for Sysvar account
-
-These are the actual system program accounts
-
-```markdown
-Clock: SysvarC1ock11111111111111111111111111111111
-EpochSchedule: SysvarEpochSchedu1e111111111111111111111111
-Fees: SysvarFees111111111111111111111111111111111
-Instructions: Sysvar1nstructions111111111111111111111111111
-RecentBlockhashes: SysvarRecentB1ockHashes11111111111111111111
-Rent: SysvarRent111111111111111111111111111111111
-SlotHashes: SysvarS1otHashes111111111111111111111111111
-SlotHistory: SysvarS1otHistory11111111111111111111111111
-StakeHistory: SysvarStakeHistory1111111111111111111111111
-SPL token program: TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA
-```
+- **Vulnerability:** Missing checks for other Sysvar accounts (Clock, SlotHashes, etc.).
 
 ```rust
-// ❌ Bad
-let sysvar = ctx.accounts.sysvar;
+// List of common Sysvar IDs (example)
+// Clock: SysvarC1ock11111111111111111111111111111111
+// Rent: SysvarRent111111111111111111111111111111111
 
-// ✅ Good - Native
+// ❌ Bad: Assuming the provided sysvar account is the correct one
+let sysvar_account = &ctx.accounts.sysvar;
+
+// ✅ Good - Native: Check against the specific required sysvar ID
 require!(
-    ctx.accounts.sysvar.key() == sysvar::rent::ID ||
-    ctx.accounts.sysvar.key() == sysvar::clock::ID ||
-    ctx.accounts.sysvar.key() == sysvar::slot_hashes::ID,
+    ctx.accounts.clock_sysvar.key() == sysvar::clock::ID,
     ErrorCode::InvalidSysvarAccount
 );
 
-// ✅ Good - Anchor
-pub sysvar: Sysvar<'info, Rent>,
+// ✅ Good - Anchor: Use the specific Sysvar type (e.g., Sysvar<'info, Clock>)
+pub clock: Sysvar<'info, Clock>, // Anchor validates key == Clock::id()
 ```
 
-Impact: Incorrect sysvar accounts could lead to incorrect program behavior and potential security issues.
+- **Impact:** Using incorrect sysvar accounts leads to invalid data (e.g., wrong timestamp from Clock) affecting program logic.
 
 ### Token Account Ownership Check
 
-- Missing check for Token Account Ownership
+- **Vulnerability:** Missing check that a token account is actually owned by the Token Program.
 
 ```rust
-// ❌ Bad
-let token_account = ctx.accounts.token_account;
+// ❌ Bad: Assuming the account is a valid token account without checking owner
+let token_account_info = &ctx.accounts.token_account; // Just an AccountInfo
 
-// ✅ Good - Native
+// ✅ Good - Native: Check the owner field
 require!(
-    token_account.owner == expected_owner,
+    token_account_info.owner == &spl_token::ID, // Or token_2022::ID
     ErrorCode::InvalidTokenAccountOwner
 );
+// Also need to deserialize and check data, mint, authority etc.
 
-// ✅ Good - Anchor
+// ✅ Good - Anchor: Use Account<'info, TokenAccount>
 #[account(
-    constraint = token_account.owner == expected_owner @ ErrorCode::InvalidTokenAccountOwner
+    // Anchor validates owner == Token::id() and deserializes data
+    // Add constraints for mint, authority, etc.
+    constraint = token_account.mint == expected_mint.key() @ ErrorCode::InvalidMint,
+    constraint = token_account.owner == user.key() @ ErrorCode::InvalidAuthority // Check token account authority if needed
 )]
-pub token_account: Account<TokenAccount>,
+pub token_account: Account<'info, TokenAccount>,
 
-// ✅ good - Anchor
-#[account(token::authority = authority)]
+// ✅ Good - Anchor (Token Specific): Use token::authority constraint
+#[account(
+    token::mint = mint_account,
+    token::authority = user_authority, // Validates token_account.owner == user_authority.key()
+)]
 pub token_account: Account<'info, TokenAccount>,
 ```
 
-Impact: Without validating token account ownership, tokens could be stolen or manipulated by unauthorized users.
+- **Impact:** Without validating token account ownership by the SPL Token program, an attacker could provide a fake account, potentially leading to token theft or bypassing checks.
 
-### Remaining Accounts
+### Remaining Accounts Validation
 
-- Missing validation on accounts in the `remaining_accounts` field
+- **Vulnerability:** Not validating accounts passed in the `remaining_accounts` slice.
 
 ```rust
-// ❌ Bad: No validation of remaining_accounts
+// ❌ Bad: Accessing remaining_accounts without any validation
 fn process_instruction(ctx: Context<Instruction>) -> Result<()> {
-    // Accessing accounts from remaining_accounts without validation
-    let accounts = ctx.remaining_accounts;
-    for account in accounts {
-        // Operating on the account without validation
-        // ...
+    for account in ctx.remaining_accounts {
+        // Using 'account' without checking owner, type, etc.
     }
     Ok(())
 }
 
-// ✅ Good: Validate each account in remaining_accounts
+// ✅ Good: Iterating and validating each remaining account based on expected properties
 fn process_instruction(ctx: Context<Instruction>) -> Result<()> {
-    let accounts = ctx.remaining_accounts;
-    for account in accounts {
-        // Validate account owner
+    for account in ctx.remaining_accounts {
+        // Example: Check owner is token program or self
         require!(
-            account.owner == &TOKEN_PROGRAM_ID ||
-            account.owner == &program_id(),
-            ErrorCode::InvalidAccountOwner
+            account.owner == &spl_token::ID || account.owner == ctx.program_id,
+            ErrorCode::InvalidRemainingAccountOwner
         );
-
-        // Additional validation based on expected account types
-        // ...
+        // Add checks for writability, signer status, expected keys, data type, etc.
+        // based on the instruction's specific needs.
     }
     Ok(())
 }
 ```
 
-Impact: Without validating accounts passed through `remaining_accounts`, attackers can pass in malicious or unexpected accounts, potentially leading to unauthorized access, fund theft, or manipulation of program state. validate them according to your needs
+- **Impact:** Attackers can pass malicious or unexpected accounts via `remaining_accounts`. Failure to validate them can lead to unauthorized access, fund manipulation, or state corruption. Always treat `remaining_accounts` as untrusted input.
 
-## Account Reloading
+## Account Reloading Issues
 
-- Not refreshing accounts after modifications through CPI calls
+- **Vulnerability:** Not refreshing account data after it might have been modified by a CPI call within the same transaction.
 
 ```rust
-// ❌ Bad: Account state not refreshed after CPI
-fn process_token_transfer(ctx: Context<TransferTokens>) -> Result<()> {
-    // Perform a CPI that modifies the 'source_token' account
+// ❌ Bad: Using stale account data after a CPI potentially modified it
+fn process_transfer(ctx: Context<TransferCtx>, amount: u64) -> Result<()> {
+    // CPI call that transfers tokens FROM source_token
     token::transfer(
-        CpiContext::new(
-            ctx.accounts.token_program.to_account_info(),
-            token::Transfer {
-                from: ctx.accounts.source_token.to_account_info(),
-                to: ctx.accounts.destination_token.to_account_info(),
-                authority: ctx.accounts.authority.to_account_info(),
-            },
-        ),
+        CpiContext::new(...), // Details omitted
         amount,
     )?;
 
-    // Incorrect: Using the same account state that was loaded at transaction start
-    // The account.amount no longer reflects the actual on-chain state
-    let remaining_balance = ctx.accounts.source_token.amount;
-
-    // ... logic dependent on remaining_balance ...
+    // PROBLEM: ctx.accounts.source_token still holds data loaded at TX start.
+    // Its 'amount' field is now outdated.
+    let balance_after_transfer = ctx.accounts.source_token.amount; // Incorrect!
+    // Logic based on this outdated balance will be flawed.
 }
 
-// ✅ Good: Refresh account state after CPI
-fn process_token_transfer(ctx: Context<TransferTokens>) -> Result<()> {
-    // Perform a CPI that modifies the 'source_token' account
+// ✅ Good: Reloading the account data after the CPI call
+fn process_transfer(ctx: Context<TransferCtx>, amount: u64) -> Result<()> {
+    // CPI call
     token::transfer(
-        CpiContext::new(
-            ctx.accounts.token_program.to_account_info(),
-            token::Transfer {
-                from: ctx.accounts.source_token.to_account_info(),
-                to: ctx.accounts.destination_token.to_account_info(),
-                authority: ctx.accounts.authority.to_account_info(),
-            },
-        ),
+        CpiContext::new(...),
         amount,
     )?;
 
-    // Correct: Reload account data from storage
+    // RELOAD the account data from the network
     ctx.accounts.source_token.reload()?;
 
-    // Now we have the current on-chain state
-    let remaining_balance = ctx.accounts.source_token.amount;
-
-    // ... logic dependent on remaining_balance ...
+    // NOW the data is fresh
+    let balance_after_transfer = ctx.accounts.source_token.amount; // Correct!
+    // Proceed with logic...
 }
 ```
 
-Impact: Solana loads accounts only once at the beginning of a transaction. When an account's state changes through a CPI call, the program's view of that account becomes outdated. Using outdated account state can lead to incorrect calculations, logic errors, and potential security vulnerabilities.
+- **Impact:** Solana only loads account data once at the start of a transaction. If a CPI modifies an account, your program's view becomes stale. Using this stale data leads to logic errors, incorrect calculations, and potential bypass of security checks (e.g., balance checks).
 
-## Closing Accounts
+## Closing Accounts Securely
 
-- Missing validation during account closure
+Closing accounts and reclaiming rent requires careful validation.
+
+- **Vulnerability:** Missing validation during account closure (e.g., checking authority, owner).
 
 ```rust
-// ❌ Bad: Closing an account without proper validation
-fn close_account(ctx: Context<CloseAccount>) -> Result<()> {
-    // Close the account and transfer funds without validation
-    let destination = &mut ctx.accounts.destination;
+// ❌ Bad: Closing an account without checking if the signer has authority
+// (Native example, assumes direct lamport manipulation which is complex)
+fn close_account_unsafe(ctx: Context<CloseCtx>) -> Result<()> {
     let account_to_close = &mut ctx.accounts.account_to_close;
+    let destination = &mut ctx.accounts.destination;
 
-    // Transfer the lamports
-    let dest_starting_lamports = destination.lamports();
-    **destination.lamports.borrow_mut() = dest_starting_lamports
-        .checked_add(account_to_close.lamports())
-        .unwrap();
-    **account_to_close.lamports.borrow_mut() = 0;
+    // Problem: No check that ctx.accounts.authority *should* be allowed to close this account.
 
-    // Clear the data
-    let mut data = account_to_close.try_borrow_mut_data()?;
-    for byte in data.iter_mut() {
-        *byte = 0;
-    }
+    // Transfer lamports (simplified, requires care)
+    // **destination.lamports += account_to_close.lamports;
+    // **account_to_close.lamports = 0;
+    // Zero out data...
 
     Ok(())
 }
 
-// ✅ Good: Properly validate before closing an account
-fn close_account(ctx: Context<CloseAccount>) -> Result<()> {
 
-    Ok(())
-}
-
-// ✅ Good - Anchor approach
+// ✅ Good - Anchor: Use the `close` constraint for safe closure
 #[derive(Accounts)]
-pub struct CloseAccount<'info> {
+pub struct CloseAccountSafe<'info> {
+    // The account receiving the rent lamports
     #[account(mut)]
-    pub destination: AccountInfo<'info>,
+    pub destination: SystemAccount<'info>, // Or specific receiver AccountInfo
 
+    // The account being closed
     #[account(
         mut,
-        constraint = account_to_close.owner == program_id @ ErrorCode::InvalidAccountOwner,
+        // Constraint to check data within the account, e.g., an authority field
         constraint = account_data.authority == authority.key() @ ErrorCode::InvalidAuthority,
+        // This tells Anchor to transfer lamports to 'destination' and assign owner to SystemProgram
         close = destination
     )]
-    pub account_to_close: Account<'info, AccountData>,
+    pub account_to_close: Account<'info, MyAccountData>,
 
+    // The authority allowed to close the account
     pub authority: Signer<'info>,
 }
 ```
 
-Impact: Improperly closing accounts without validation can lead to unauthorized account closures, fund theft, or loss of critical program data. Additionally, if the data isn't properly cleared, it could potentially be reused in ways that compromise the system's security model.
+- **Impact:** Improper closure can allow unauthorized users to close accounts, steal rent lamports, or destroy critical program data. Using Anchor's `close` constraint handles the lamport transfer and owner reassignment safely.
 
-- Not checking receiver of lamports during account closure
+- **Vulnerability:** Not checking the receiver of lamports during account closure.
 
 ```rust
-// ❌ Bad: Not validating the destination account for lamports
-fn close_account(ctx: Context<CloseAccount>) -> Result<()> {
-    // Anyone's account could be passed as destination
-    let destination = &mut ctx.accounts.destination;
-    let account_to_close = &mut ctx.accounts.account_to_close;
-
-    // Transfer lamports to potentially malicious destination
-    let dest_starting_lamports = destination.lamports();
-    **destination.lamports.borrow_mut() = dest_starting_lamports
-        .checked_add(account_to_close.lamports())
-        .unwrap();
-    **account_to_close.lamports.borrow_mut() = 0;
-
-    // Clear the data
-    let mut data = account_to_close.try_borrow_mut_data()?;
-    for byte in data.iter_mut() {
-        *byte = 0;
-    }
-
-    Ok(())
-}
-
-// ✅ Good: Validate the destination account
-fn close_account(ctx: Context<CloseAccount>) -> Result<()> {
-    // Ensure destination is the authority or another approved address
-    require!(
-        ctx.accounts.destination.key() == ctx.accounts.authority.key() ||
-        ctx.accounts.destination.key() == approved_treasury_address,
-        ErrorCode::InvalidDestination
-    );
-
-    // Rest of closing logic
-    // ...
-}
-
-// ✅ Good - Anchor with destination validation
+// ❌ Bad: Anchor close constraint sending lamports to an unvalidated 'destination'
 #[derive(Accounts)]
-pub struct CloseAccount<'info> {
+pub struct CloseAccountUnsafeReceiver<'info> {
+    // Problem: 'destination' could be any account provided by the caller
+    #[account(mut)]
+    pub destination: AccountInfo<'info>, // Too generic, could be anyone!
+
+    #[account(mut, close = destination)]
+    pub account_to_close: Account<'info, MyAccountData>,
+    pub authority: Signer<'info>,
+}
+
+// ✅ Good - Anchor: Validate the destination account explicitly
+#[derive(Accounts)]
+pub struct CloseAccountSafeReceiver<'info> {
     #[account(
         mut,
-        constraint = destination.key() == authority.key() @ ErrorCode::InvalidDestination
+        // Ensure the destination is the authority closing the account, or a known treasury etc.
+        constraint = destination.key() == authority.key() @ ErrorCode::InvalidCloseDestination
     )]
-    pub destination: AccountInfo<'info>,
+    pub destination: SystemAccount<'info>, // Use SystemAccount or verify key
 
-    #[account(
-        mut,
-        close = destination
-    )]
-    pub account_to_close: Account<'info, AccountData>,
-
+    #[account(mut, close = destination)]
+    pub account_to_close: Account<'info, MyAccountData>,
     pub authority: Signer<'info>,
 }
 ```
 
-Impact: Without validating the destination account, funds from closed accounts could be redirected to attacker-controlled addresses, resulting in theft of funds that should be returned to legitimate users.
+- **Impact:** If the destination account isn't validated, attackers can specify their own account to receive the rent lamports from closed accounts, effectively stealing those funds.
+- **References:**
+    - [Helius: Closing Accounts](https://www.helius.dev/blog/a-hitchhikers-guide-to-solana-program-security#closing-accounts)
+    - [Solana Docs: Closing Accounts](https://solana.com/developers/courses/program-security/closing-accounts)
 
-References:
+## Denial of Service (DoS) Vectors
 
-- [A Hitchhiker's Guide to Solana Program Security - Closing Accounts](https://www.helius.dev/blog/a-hitchhikers-guide-to-solana-program-security#closing-accounts)
-- [Solana Program Security Course - Closing Accounts](https://solana.com/developers/courses/program-security/closing-accounts)
+Attackers can try to prevent legitimate users from interacting with your program.
 
-## DOS vectors
+### Associated Token Account (ATA) Initialization
 
-### Associated Token Account Initialization
-
-- Using `init` instead of `init_if_needed` for ATA creation
+- **Vulnerability:** Using `init` instead of `init_if_needed` for ATAs.
 
 ```rust
-// ❌ Bad - Using init for ATA creation
+// ❌ Bad: Using 'init' will fail if the ATA already exists
 #[account(
-    init,
+    init, // Fails if account exists
     payer = user,
     associated_token::mint = mint,
     associated_token::authority = user,
 )]
 pub token_account: Account<'info, TokenAccount>,
 
-// ✅ Good - Using init_if_needed for ATA creation
+// ✅ Good: Using 'init_if_needed' is idempotent
 #[account(
-    init_if_needed,
+    init_if_needed, // Creates only if it doesn't exist
     payer = user,
     associated_token::mint = mint,
     associated_token::authority = user,
@@ -696,420 +601,402 @@ pub token_account: Account<'info, TokenAccount>,
 pub token_account: Account<'info, TokenAccount>,
 ```
 
-Impact: Using `init` instead of `init_if_needed` for ATA creation will cause transactions to fail if the token account already exists, enabling attackers to front-run legitimate transactions by creating accounts first, resulting in denial of service.
+- **Impact:** Attackers can front-run users by creating their ATAs first. Subsequent legitimate transactions using `init` will fail, causing a DoS. `init_if_needed` avoids this.
 
-### Account Pre-creation Attack
+### Account Pre-creation Attack (PDAs)
 
-- Not handling cases where accounts could be pre-created by attackers
+- **Vulnerability:** Using `init` for PDAs without handling potential pre-creation by an attacker.
 
 ```rust
-// ❌ Bad - Vulnerable to pre-creation attacks
+// ❌ Bad: Vulnerable if attacker front-runs and creates the PDA first
 #[account(
-    init,
+    init, // Fails if account exists
     payer = user,
-    space = 8 + size,
-    seeds = [b"account", user.key().as_ref()],
+    space = 8 + DataAccount::LEN,
+    seeds = [b"data", user.key().as_ref()],
     bump
 )]
 pub data_account: Account<'info, DataAccount>,
 
-// ✅ Good - Using init_if_needed to handle pre-created accounts
+// ✅ Good: Use 'init_if_needed' to handle pre-creation gracefully
 #[account(
-    init_if_needed,
+    init_if_needed, // Creates only if needed
     payer = user,
-    space = 8 + size,
-    seeds = [b"account", user.key().as_ref()],
+    space = 8 + DataAccount::LEN,
+    seeds = [b"data", user.key().as_ref()],
     bump
 )]
 pub data_account: Account<'info, DataAccount>,
 
-// ✅ Good - Additional validation for pre-existing accounts
+// ✅ Even Better: Add constraints if needed for existing accounts
 #[account(
     init_if_needed,
     payer = user,
-    space = 8 + size,
-    seeds = [b"account", user.key().as_ref()],
+    space = 8 + DataAccount::LEN,
+    seeds = [b"data", user.key().as_ref()],
     bump,
-    constraint = data_account.owner == program_id @ ErrorCode::InvalidOwner
+    // Add checks relevant if the account already existed, e.g., owner
+    constraint = data_account.owner == *program_id @ ErrorCode::InvalidOwner // Example check
 )]
 pub data_account: Account<'info, DataAccount>,
+
 ```
 
-Impact: When a program expects to create an account but doesn't handle pre-existing accounts, attackers can front-run transactions and create the targeted accounts first, causing legitimate transactions to fail and creating denial of service conditions.
+- **Impact:** Similar to ATAs, if an attacker can predict PDA addresses, they can pre-create them. Programs using `init` will then fail for legitimate users trying to initialize the same PDA. Use `init_if_needed` and potentially add constraints to validate state if the account already exists.
+- **Reference:** [Code4rena Pump.fun Report Example](https://code4rena.com/reports/2025-01-pump-science#h-01-the-lock_pool-operation-can-be-dos)
 
-Reference : https://code4rena.com/reports/2025-01-pump-science#h-01-the-lock_pool-operation-can-be-dos
+### Account Existence Check (Donation Attack)
 
-### Account Existence Check
-
-- Using lamports to check if a account exists
+- **Vulnerability:** Using lamport balance to check if an account exists or is initialized.
 
 ```rust
-// ❌ Bad: Checking token account existence with lamports
-if token_account.lamports() > 0 {
-    // Token account exists
-    // Proceed with operations
+// ❌ Bad: Checking lamports > 0 is not a reliable existence check
+if token_account_info.lamports() > 0 {
+    // Problem: Attacker can send dust SOL to an uninitialized account
 }
 
-// ❌ Bad: Using rent-exemption as existence check
+// ❌ Bad: Checking rent-exemption is also not foolproof
 let rent = Rent::get()?;
-if token_account.lamports() >= rent.minimum_balance(TokenAccount::LEN) {
-    // Token account exists
-    // Proceed with operations
+if token_account_info.lamports() >= rent.minimum_balance(TokenAccount::LEN) {
+     // Problem: Still vulnerable to donation attack
 }
 
-// ✅ Good: Properly validate token account existence and data
-// Check if the account exists and contains valid token data
-if !token_account.data_is_empty() && token_account.owner == &spl_token::ID {
-    let token_data = TokenAccount::try_deserialize(&mut &token_account.data.borrow()[..])?;
-    // Now we can safely use the token data
+// ✅ Good: Check owner and if data is deserializable (Anchor does this implicitly)
+// Native check:
+if !token_account_info.data_is_empty() && token_account_info.owner == &spl_token::ID {
+    // Attempt to deserialize
+    match TokenAccount::try_deserialize(&mut &token_account_info.data.borrow()[..]) {
+        Ok(token_data) => { /* Account is likely initialized */ },
+        Err(_) => { /* Deserialization failed */ },
+    }
 }
 
-// ✅ Good: Use Anchor's Account type which validates existence and ownership
-#[account(
-    constraint = token_account.mint == expected_mint @ ErrorCode::InvalidMint,
-)]
-pub token_account: Account<'info, TokenAccount>,
+// ✅ Good - Anchor: The Account<'info, T> deserializer handles these checks
+pub token_account: Account<'info, TokenAccount>, // This automatically checks owner and deserializes
 ```
 
-Impact: Relying on lamports to verify account existence is vulnerable to donation attacks, where an attacker can transfer lamports to an uninitialized account to make it appear valid. This can lead to operations on invalid accounts, which may cause unexpected behavior, data corruption, or theft of tokens.
+- **Impact:** Attackers can send a small amount of SOL (dust) to an uninitialized account address. Checks relying solely on lamport balance will mistakenly treat the account as initialized, potentially leading to operations on invalid data or bypassing initialization logic. Always check the account owner and attempt deserialization.
 
-### Mint Issues
+### Mint Issues (Token-2022 and SPL Token)
 
-- Missing check for mint close authority extension
+Validate mint account properties to avoid unexpected behavior.
+
+- **Vulnerability:** Missing check for Mint Close Authority (Token-2022 extension).
 
 ```rust
-// ❌ Bad: No validation of close authority
-let mint = ctx.accounts.mint;
+// ❌ Bad: Using a mint without checking if it can be closed
+let mint_info = &ctx.accounts.mint.to_account_info();
 
-// ✅ Good: Validate close authority is not set or expected
-let mint = ctx.accounts.mint;
-let close_authority = spl_token_2022::extension::close_authority::get_close_authority(&mint.to_account_info())?;
-require!(close_authority.is_none(), ErrorCode::UnexpectedCloseAuthority);
+// ✅ Good: Check if the close_authority extension is set (requires Token-2022 crate)
+use spl_token_2022::extension::StateWithExtensions;
+use spl_token_2022::state::Mint;
+
+let mint_account_info = &ctx.accounts.mint.to_account_info();
+let mint_data = mint_account_info.try_borrow_data()?;
+let mint_state = StateWithExtensions::<Mint>::unpack(&mint_data)?;
+let extension_data = mint_state.get_extension::<spl_token_2022::extension::close_authority::CloseAuthority>()?;
+
+require!(extension_data.authority.is_none(), ErrorCode::MintHasCloseAuthority);
 ```
 
-Impact: If close authority is set, the mint could be closed by the authority, potentially rendering tokens worthless.
+- **Impact:** If a mint has a close authority set, that authority can permanently close the mint, potentially rendering all tokens of that mint unusable or worthless within your protocol.
 
-- Missing check for mint freeze authority
+- **Vulnerability:** Missing check for Mint Freeze Authority (SPL Token & Token-2022).
 
 ```rust
-// ❌ Bad: No validation of freeze authority
-let mint = ctx.accounts.mint;
+// ❌ Bad: Using a mint without checking freeze authority
+let mint = &ctx.accounts.mint; // Assumes Account<'info, Mint>
 
-// ✅ Good: Validate freeze authority is not set or expected
-let mint = ctx.accounts.mint;
-require!(mint.freeze_authority.is_none(), ErrorCode::UnexpectedFreezeAuthority);
+// ✅ Good: Check the freeze_authority field on the Mint account data
+require!(mint.freeze_authority.is_none(), ErrorCode::MintHasFreezeAuthority);
 ```
 
-Impact: If freeze authority is set, user token accounts could be frozen, preventing users from transferring their tokens, raydium does not allow mint with freeze authority
+- **Impact:** If a mint has a freeze authority, that authority can freeze individual token accounts associated with that mint, preventing users from transferring their tokens. Protocols like Raydium often disallow mints with freeze authorities.
 
-- Fee on transfer extension not properly handled
+- **Vulnerability:** Fee-on-Transfer (Transfer Fee) extension not handled correctly (Token-2022).
 
 ```rust
-// ❌ Bad: Using basic transfer with fee-enabled token
-token::transfer(
-    ctx.accounts.token_program.to_account_info(),
-    ctx.accounts.from.to_account_info(),
-    ctx.accounts.to.to_account_info(),
-    ctx.accounts.authority.to_account_info(),
+// ❌ Bad: Using basic spl_token::transfer with a Token-2022 mint that has transfer fees enabled.
+// Receiver gets amount - fee, but your program might record 'amount'.
+spl_token::instruction::transfer(
+    &spl_token::ID, // Wrong program ID for Token-2022
+    source.key,
+    destination.key,
+    authority.key,
     &[],
     amount,
 )?;
 
-// ✅ Good: Using transfer_checked for fee-enabled tokens
-token::transfer_checked(
-    ctx.accounts.token_program.to_account_info(),
-    ctx.accounts.from.to_account_info(),
-    ctx.accounts.mint.to_account_info(),
-    ctx.accounts.to.to_account_info(),
-    ctx.accounts.authority.to_account_info(),
-    &[],
-    amount,
-    mint.decimals,
+
+// ✅ Good: Using spl_token_2022::instruction::transfer_checked and the Token-2022 program ID.
+// This instruction accounts for fees and decimals.
+use spl_token_2022::instruction as token_2022_instruction;
+invoke_signed(
+    &token_2022_instruction::transfer_checked(
+        &token_2022::ID, // Correct program ID
+        source.key,
+        mint.key, // Mint account required for checked instruction
+        destination.key,
+        authority.key,
+        signer_pubkeys, // Signers if needed
+        amount,
+        decimals, // Mint decimals
+    )?,
+    &[source, mint, destination, authority], // Account infos
+    signer_seeds, // PDA seeds if authority is PDA
 )?;
 ```
 
-Impact: Using `transfer` instead of `transfer_checked` with fee-enabled tokens can lead to unexpected token amounts being received, potentially causing accounting errors.
+- **Impact:** Using standard `transfer` with fee-enabled Token-2022 mints results in the receiver getting less than `amount` due to the fee deduction. This causes accounting discrepancies if your program assumes the full `amount` was transferred. Use `transfer_checked` with the correct Token-2022 program ID.
+- **Reference:** [SPL Docs: Transfer Fees](https://spl.solana.com/token-2022/extensions#transfer-fees)
 
-Reference : https://spl.solana.com/token-2022/extensions#transfer-fees
+## Event Emission Issues
 
-## Event emission issues
+Events are crucial for off-chain monitoring and user feedback. Ensure they are accurate and comprehensive.
 
-### Wrong event emission
+### Wrong Event Emission
 
-- Emitting incorrect or misleading event data
-
-```rust
-// ❌ Bad: Emitting incorrect event data
-fn transfer_tokens(ctx: Context<Transfer>, amount: u64) -> Result<()> {
-    // Perform transfer logic...
-
-    // Incorrect: Emitting wrong amount in event
-    msg!("Transfer completed: amount={}", amount + fee);  // Wrong: includes fee in reported amount
-    emit!(TransferEvent {
-        from: ctx.accounts.sender.key(),
-        to: ctx.accounts.receiver.key(),
-        amount: amount + fee,  // Wrong: includes fee in reported amount
-    });
-
-    Ok(())
-}
-
-// ✅ Good: Emitting accurate event data
-fn transfer_tokens(ctx: Context<Transfer>, amount: u64) -> Result<()> {
-    // Perform transfer logic...
-
-    // Correct: Emitting accurate information
-    msg!("Transfer completed: amount={}, fee={}", amount, fee);
-    emit!(TransferEvent {
-        from: ctx.accounts.sender.key(),
-        to: ctx.accounts.receiver.key(),
-        amount: amount,
-        fee: fee,
-    });
-
-    Ok(())
-}
-```
-
-Impact: Incorrect event data can mislead users and off-chain systems, causing accounting errors and confusion. This may also affect indexers and dashboards that rely on event data.
-
-### Missing event emission on critical state updates
-
-- Failing to emit events for important state changes
+- **Vulnerability:** Emitting incorrect or misleading data in events.
 
 ```rust
-// ❌ Bad: Missing event for critical state change
-fn update_admin(ctx: Context<UpdateAdmin>) -> Result<()> {
-    let program_state = &mut ctx.accounts.program_state;
-
-    // Critical state change without event
-    program_state.admin = ctx.accounts.new_admin.key();
-
-    Ok(())
-}
-
-// ✅ Good: Including events for all critical state changes
-fn update_admin(ctx: Context<UpdateAdmin>) -> Result<()> {
-    let program_state = &mut ctx.accounts.program_state;
-
-    // Store old admin for event
-    let old_admin = program_state.admin;
-
-    // Update state
-    program_state.admin = ctx.accounts.new_admin.key();
-
-    // Emit event for the critical change
-    msg!("Admin changed from {} to {}",
-        old_admin, ctx.accounts.new_admin.key());
-    emit!(AdminChangedEvent {
-        old_admin: old_admin,
-        new_admin: ctx.accounts.new_admin.key(),
+// ❌ Bad: Event data doesn't accurately reflect the state change
+fn process_action(ctx: Context<Action>, fee: u64, value: u64) -> Result<()> {
+    // ... logic ...
+    emit!(ActionEvent {
+        user: ctx.accounts.user.key(),
+        value: value + fee, // Incorrectly includes fee in the value field
         timestamp: Clock::get()?.unix_timestamp,
     });
+    Ok(())
+}
 
+// ✅ Good: Event data accurately reflects the relevant state
+fn process_action(ctx: Context<Action>, fee: u64, value: u64) -> Result<()> {
+    // ... logic ...
+    emit!(ActionEvent {
+        user: ctx.accounts.user.key(),
+        value: value, // Correct value
+        fee: fee,     // Separate field for fee
+        timestamp: Clock::get()?.unix_timestamp,
+    });
     Ok(())
 }
 ```
 
-Impact: Missing events for critical state changes makes it difficult to track important program updates, audit program activity, and notify users of significant changes. This reduces transparency and can hamper off-chain monitoring systems from detecting potentially malicious activities.
+- **Impact:** Incorrect event data misleads users, indexers, and monitoring tools, potentially causing downstream errors or hiding malicious activity.
+
+### Missing Event Emission on Critical State Updates
+
+- **Vulnerability:** Failing to emit events when critical program state changes (e.g., admin roles, fees, paused status).
+
+```rust
+// ❌ Bad: Updating critical state without emitting an event
+fn update_fee(ctx: Context<UpdateFee>, new_fee: u64) -> Result<()> {
+    ctx.accounts.config.fee = new_fee; // State changed, but no event emitted
+    Ok(())
+}
+
+// ✅ Good: Emitting an event whenever critical state is updated
+fn update_fee(ctx: Context<UpdateFee>, new_fee: u64) -> Result<()> {
+    let old_fee = ctx.accounts.config.fee;
+    ctx.accounts.config.fee = new_fee;
+
+    emit!(FeeChangedEvent {
+        old_fee: old_fee,
+        new_fee: new_fee,
+        admin: ctx.accounts.admin.key(),
+        timestamp: Clock::get()?.unix_timestamp,
+    });
+    Ok(())
+}
+```
+
+- **Impact:** Missing events for critical changes reduces transparency and makes it hard for users and off-chain systems to track important updates or detect unauthorized modifications.
 
 ## Arithmetic and Data Handling Security
 
+Safe math operations are crucial, especially when dealing with funds.
+
 ### Integer Overflow/Underflow Protection
 
-- Missing checks for arithmetic operations
+- **Vulnerability:** Performing arithmetic without checks for overflow/underflow.
 
 ```rust
-// ❌ Bad: Unchecked arithmetic
-let balance = account.balance + amount;
+// ❌ Bad: Unchecked addition, could overflow
+let new_balance = balance + deposit_amount;
 
-// ✅ Good: Checked arithmetic
-let balance = account.balance.checked_add(amount)
-    .ok_or(ProgramError::Overflow)?;
+// ✅ Good: Using checked arithmetic methods
+let new_balance = balance.checked_add(deposit_amount)
+    .ok_or(ErrorCode::ArithmeticOverflow)?;
 ```
 
-> **Note**: Always verify your `Cargo.toml` has `overflow-checks = true` in the `[profile.release]` section as an additional safeguard. This enables runtime integer overflow checks even in release builds.
-
-Impact: Unchecked arithmetic operations can lead to integer overflow or underflow, resulting in incorrect calculations and potential loss of funds.
-
-Reference: https://neodyme.io/en/blog/solana_common_pitfalls/#integer-overflow--underflow
+- **Note:** Ensure `overflow-checks = true` is enabled in your `Cargo.toml` under `[profile.release]` for runtime checks in release builds as a safety net. However, explicit `checked_*` methods are preferred for clarity and error handling.
+- **Impact:** Overflows/underflows lead to incorrect calculations, potentially causing logic errors or loss/theft of funds.
+- **Reference:** [Neodyme: Integer Overflow/Underflow](https://neodyme.io/en/blog/solana_common_pitfalls/#integer-overflow--underflow)
 
 ### Division Safety
 
-- Missing checks for zero divisors
+- **Vulnerability:** Performing division without checking for a zero divisor.
 
 ```rust
-// ❌ Bad: Unchecked division
-let result = total / divisor;
+// ❌ Bad: Potential panic if divisor is zero
+let result = total_value / divisor;
 
-// ✅ Good: Check for zero before division
+// ✅ Good: Check for zero before dividing
 if divisor == 0 {
-    return Err(ProgramError::InvalidArgument);
+    return err!(ErrorCode::DivisionByZero);
 }
-let result = total / divisor;
+let result = total_value.checked_div(divisor)
+    .ok_or(ErrorCode::ArithmeticOverflow)?; // Also check division result if needed
 ```
 
-Impact: Division by zero can cause program crashes and transaction failures.
+- **Impact:** Division by zero causes the program to panic and the transaction to fail.
 
 ### Precision Loss Prevention
 
-- Missing consideration for precision in calculations
+- **Vulnerability:** Performing calculations (especially involving division) in an order that unnecessarily loses precision.
 
 ```rust
-// ❌ Bad: Potential precision loss
-let rate = (amount * 100) / total;
+// ❌ Bad: Division before multiplication can lose precision
+// If amount = 5, total = 10, rate_basis_points = 50 (0.5%)
+// rate = (5 / 10) * 50 = 0 * 50 = 0 (Incorrect due to integer division)
+let rate = (amount / total) * rate_basis_points;
 
-// ✅ Good: Maintain precision
-let rate = amount.checked_mul(100)
-    .ok_or(ProgramError::Overflow)?
+// ✅ Good: Perform multiplication first to maintain precision
+// rate = (5 * 50) / 10 = 250 / 10 = 25
+let rate = amount.checked_mul(rate_basis_points)
+    .ok_or(ErrorCode::ArithmeticOverflow)?
     .checked_div(total)
-    .ok_or(ProgramError::Overflow)?;
+    .ok_or(ErrorCode::DivisionByZero)?; // Assume total can't be zero here
 ```
 
-Impact: Loss of precision in financial calculations can lead to incorrect values and potential fund discrepancies.
+- **Impact:** Loss of precision leads to incorrect calculations, especially significant in financial contexts.
 
 ### Safe Type Casting
 
-- Unchecked type conversions
+- **Vulnerability:** Unsafely casting between numeric types (e.g., `u128` to `u64`).
 
 ```rust
-// ❌ Bad: Unsafe casting
-let small_num = big_num as u64;
+// ❌ Bad: `as` keyword truncates without warning if value exceeds target type's max
+let big_num: u128 = 1_000_000_000_000;
+let small_num = big_num as u64; // Potential truncation if big_num > u64::MAX
 
-// ✅ Good: Safe casting with checks
-let small_num = u64::try_from(big_num)
-    .map_err(|_| ProgramError::InvalidArgument)?;
+// ✅ Good: Use `try_from` or `try_into` for safe conversions
+let small_num: u64 = u64::try_from(big_num)
+    .map_err(|_| ErrorCode::TypeCastFailed)?;
 ```
 
-Impact: Unchecked type conversions can lead to data corruption or unexpected behavior.
+- **Impact:** Unsafe casts can truncate values, leading to incorrect data and calculation errors.
 
 ### Rounding Considerations
 
-- Implicit rounding behavior
+- **Vulnerability:** Relying on implicit integer division rounding (truncation towards zero) when specific rounding (e.g., ceiling, floor, nearest) is needed.
 
 ```rust
-// ❌ Bad: Implicit rounding
-let shares = total_shares * amount / total_supply;
+// ❌ Bad: Implicit truncation might not be the desired rounding behavior
+// If calculating shares: total_shares = 100, amount = 5, total_supply = 11
+// shares = (100 * 5) / 11 = 500 / 11 = 45 (truncated)
+let shares = total_shares.checked_mul(amount)?
+    .checked_div(total_supply)?;
 
-// ✅ Good: Explicit rounding with checks
-let shares = total_shares
-    .checked_mul(amount)?
+// ✅ Good: Explicitly implement the desired rounding (e.g., ceiling division)
+// Ceiling division formula: (numerator + denominator - 1) / denominator
+let numerator = total_shares.checked_mul(amount)?;
+let shares_ceil = numerator
     .checked_add(total_supply.checked_sub(1)?)?
-    .checked_div(total_supply)?;  // Ceiling division
+    .checked_div(total_supply)?; // shares_ceil = (500 + 11 - 1) / 11 = 510 / 11 = 46
 ```
 
-Impact: Incorrect rounding behavior can affect calculations, especially in financial operations.
-
-### Error Handling
-
-- Missing error handling for arithmetic operations
-
-```rust
-// ❌ Bad: No error handling
-fn calculate_amount(base: u64, multiplier: u64) -> u64 {
-    base * multiplier
-}
-
-// ✅ Good: Proper error handling
-fn calculate_amount(base: u64, multiplier: u64) -> Result<u64, ProgramError> {
-    base.checked_mul(multiplier)
-        .ok_or(ProgramError::Overflow)
-}
-```
-
-Impact: Insufficient handling of arithmetic errors can lead to unhandled exceptions and potential vulnerabilities.
+- **Impact:** Incorrect rounding affects share calculations, reward distributions, and other precision-sensitive operations.
 
 ### Decimal Handling
 
-- Improper handling of decimal calculations
+- **Vulnerability:** Performing calculations directly on raw integer values representing fixed-point decimals without proper scaling.
 
 ```rust
-// ❌ Bad: Direct decimal operations
-let price = raw_price / 100;  // For 2 decimal places
+// ❌ Bad: Direct integer math on values representing decimals (e.g., price with 6 decimals)
+let raw_price: u64 = 5_000_000; // Represents $5.00
+let quantity: u64 = 10;
+let total_cost = raw_price * quantity; // Correct: 50_000_000 ($50.00)
 
-// ✅ Good: Using decimal handling library
-use anchor_decimal::Decimal;
+// Example of bad scaling:
+let discount_percentage = 10; // 10%
+let discount_amount = (raw_price * discount_percentage) / 100; // 500_000 ($0.50) - Correct
+// But complex calculations can easily go wrong.
 
-let price = Decimal::from_price(raw_price, 2)?;
+// ✅ Good: Use dedicated decimal libraries or carefully manage scaling factors
+// Example using hypothetical Decimal type (Anchor doesn't have a built-in one)
+// let price = Decimal::new(raw_price, 6);
+// let quantity = Decimal::from(quantity);
+// let total_cost = price * quantity; // Library handles scaling
 ```
 
-Impact: Improper handling of decimal calculations can lead to rounding errors and incorrect financial calculations.
+- **Impact:** Manually managing decimal scaling is error-prone. Incorrect scaling leads to vastly wrong calculation results. Consider using libraries designed for fixed-point arithmetic if complex decimal math is required.
 
 ## Seed Collisions
 
-### The Vulnerability
-
-Seed collisions occur when two different sets of seed values generate the same Program Derived Address (PDA). This vulnerability can lead to account confusion, where one account is mistaken for another, potentially resulting in denial of service attacks or complete compromise of program functionality.
-
-### Example Scenario
+- **Vulnerability:** Different sets of seeds unintentionally producing the same PDA address.
 
 ```rust
-// ❌ Bad - Using simple seeds that might collide
+// ❌ Bad: Seeds are too simple and might collide depending on input IDs
+// If session_id can equal different_id, these two PDAs could collide
 #[account(
-    init,
-    payer = user,
-    space = 8 + size,
-    seeds = [b"vote", session_id.as_bytes()],
+    seeds = [b"vote", session_id.as_bytes()], bump
+)]
+pub vote_account: Account<'info, VoteAccount>,
+
+#[account(
+    seeds = [b"vote", different_id.as_bytes()], bump
+)]
+pub session_account: Account<'info, SessionAccount>,
+
+
+// ✅ Good: Use distinct prefixes and include more context to ensure uniqueness
+#[account(
+    seeds = [
+        b"vote_account_v1", // Unique prefix
+        organizer.key().as_ref(), // Context: organizer
+        session_id.as_bytes() // Specific ID
+    ],
     bump
 )]
 pub vote_account: Account<'info, VoteAccount>,
 
-// Another part of the program that could generate the same PDA
 #[account(
-    init,
-    payer = organizer,
-    space = 8 + size,
-    seeds = [b"vote", different_id.as_bytes()],
+    seeds = [
+        b"session_account_v1", // Different unique prefix
+        organizer.key().as_ref(),
+        session_id.as_bytes()
+    ],
     bump
 )]
 pub session_account: Account<'info, SessionAccount>,
 ```
 
-### Recommended Mitigation
+- **Mitigation Strategies:**
+    1.  **Unique Prefixes:** Use distinct string prefixes (`b"user_data"`, `b"config_v1"`, etc.) for different account types.
+    2.  **Contextual Seeds:** Include keys (like user pubkeys, mint addresses) or unique identifiers relevant to the specific PDA instance.
+    3.  **Validate User Input:** If user input forms part of seeds, validate it carefully or combine it with program-controlled elements.
+    4.  **Sequence/Nonce:** For PDAs created sequentially, consider including a nonce or sequence number in the seeds.
+- **Impact:** Seed collisions allow one PDA account to be used where another was expected, potentially leading to state corruption, bypassing authorization checks, DoS, or allowing attackers to control unexpected parts of the program state.
 
-```rust
-// ✅ Good - Using unique prefixes and additional context in seeds
-#[account(
-    init,
-    payer = user,
-    space = 8 + size,
-    seeds = [b"vote_session", organizer.key().as_ref(), session_id.as_bytes()],
-    bump
-)]
-pub vote_account: Account<'info, VoteAccount>,
+## Essential Security Resources
 
-// Different purpose uses different prefix
-#[account(
-    init,
-    payer = voter,
-    space = 8 + size,
-    seeds = [b"user_vote", session_id.as_bytes(), voter.key().as_ref()],
-    bump
-)]
-pub user_vote: Account<'info, UserVote>,
-```
-
-To mitigate seed collision vulnerabilities:
-
-1. Use unique prefixes for seeds across different PDAs in the same program
-2. Include additional contextual data in seeds (e.g., user public keys, timestamps)
-3. When using user-supplied data as seeds, validate its uniqueness or add program-controlled components
-4. Consider using a nonce value as part of the seed to ensure uniqueness
-5. Test your program with various seed inputs to verify no collisions occur in expected usage patterns
-
-Impact: Seed collisions can lead to account confusion, where a PDA created for one purpose is mistakenly used for another. This can result in security vulnerabilities including denial of service, account takeovers, or data corruption.
-
-## Resources
+Stay updated and learn from others:
 
 ### Official Documentation
 
 - [Solana Program Security Course](https://solana.com/developers/courses/program-security)
 
-### Security Best Practices
+### Security Best Practices & Research
 
-- [Token-2022 Security Best Practices](https://blog.offside.io/p/token-2022-security-best-practices-part-1)
-- [Common Vulnerabilities in Anchor Programs](https://www.zellic.io/blog/the-vulnerabilities-youll-write-with-anchor/)
-- [A Hitchhiker's Guide to Solana Program Security](https://www.helius.dev/blog/a-hitchhikers-guide-to-solana-program-security)
-- [Token-2022 Security Best Practices Part 2](https://blog.offside.io/p/token-2022-security-best-practices-part-2)
-- [Solana Program Security Research](https://research.kudelskisecurity.com/2021/09/15/solana-program-security-part1/)
-- [Solana Smart Contract Security Best Practices](https://github.com/slowmist/solana-smart-contract-security-best-practices)
+- [Token-2022 Security Best Practices (Offside Blog Part 1)](https://blog.offside.io/p/token-2022-security-best-practices-part-1)
+- [Token-2022 Security Best Practices (Offside Blog Part 2)](https://blog.offside.io/p/token-2022-security-best-practices-part-2)
+- [Common Vulnerabilities in Anchor Programs (Zellic Blog)](https://www.zellic.io/blog/the-vulnerabilities-youll-write-with-anchor/)
+- [A Hitchhiker's Guide to Solana Program Security (Helius Blog)](https://www.helius.dev/blog/a-hitchhikers-guide-to-solana-program-security)
+- [Solana Program Security Research (Kudelski Security)](https://research.kudelskisecurity.com/2021/09/15/solana-program-security-part1/)
+- [Solana Smart Contract Security Best Practices (SlowMist GitHub)](https://github.com/slowmist/solana-smart-contract-security-best-practices)
+
+---
+
+Building secure Solana programs requires diligence and attention to detail. This checklist covers many common pitfalls, but security is an ongoing process. Regularly audit your code, stay informed about new vulnerabilities, and leverage the tools and resources available in the ecosystem. Happy (secure) building!
