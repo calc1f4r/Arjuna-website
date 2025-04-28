@@ -24,7 +24,6 @@ const App = () => (
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/code-examples" element={<BlogPostWithCode />} />
             <Route path="/blog/:id" element={<BlogPost />} />
-            <Route path="*" element={<NotFound />} />
           </Routes>
         </Layout>
       </BrowserRouter>
