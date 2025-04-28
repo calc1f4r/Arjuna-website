@@ -487,14 +487,25 @@ const Index = () => {
                 <div className="bg-card/90 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden transition-all hover:scale-[1.02] hover:bg-secondary/30 duration-300 h-full flex flex-col shadow-lg">
                   <div className="relative h-56 overflow-hidden">
                     {post.coverImage ? (
-                      <>
-                        <img
+                      post.coverImage.endsWith('.mp4') ? (
+                        <video
                           src={post.coverImage}
-                          alt={post.title}
-                          className="object-cover w-full h-full transform group-hover:scale-105 transition-transform duration-500" // Added w-full h-full
+                          className="object-cover w-full h-full"
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60"></div>
-                      </>
+                      ) : (
+                        <>
+                          <img
+                            src={post.coverImage}
+                            alt={post.title}
+                            className="object-cover w-full h-full transform group-hover:scale-105 transition-transform duration-500"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60"></div>
+                        </>
+                      )
                     ) : (
                       <div className="w-full h-full bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20 flex items-center justify-center">
                         <Shield className="w-12 h-12 text-primary/50" />

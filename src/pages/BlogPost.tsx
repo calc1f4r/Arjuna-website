@@ -126,9 +126,7 @@ const BlogPost = () => {
   // Custom component for rendering code blocks with Prism highlighting
   const CodeBlock = ({ node, inline, className, children, ...props }: any) => {
     const match = /language-(\w+)/.exec(className || "");
-    const lang = match ? match[1] : "markup"; // Default to markup if no language specified
-
-    // For inline code, just render it simply
+    const lang = match ? match[1] : "markup";
     if (inline) {
       return (
         <code className={className} {...props}>
@@ -199,11 +197,22 @@ const BlogPost = () => {
       {/* Cover Image (Optional) */}
       {post.coverImage && (
         <div className="mb-10 rounded-lg overflow-hidden">
-          <img
-            src={post.coverImage}
-            alt={`${post.title} cover`}
-            className="w-full h-auto object-cover"
-          />
+          {post.coverImage.endsWith('.mp4') ? (
+            <video
+              src={post.coverImage}
+              className="w-full h-auto object-cover"
+              autoPlay
+              loop
+              muted
+              playsInline
+            />
+          ) : (
+            <img
+              src={post.coverImage}
+              alt={`${post.title} cover`}
+              className="w-full h-auto object-cover"
+            />
+          )}
         </div>
       )}
 

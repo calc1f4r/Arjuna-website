@@ -152,13 +152,24 @@ const Blog = () => {
             <Link to={`/blog/${featuredPost.id}`} className="block">
               <div className="glass-card rounded-xl overflow-hidden transition-all hover:scale-[1.01] hover:bg-secondary/30 cursor-pointer">
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-                  {/* Use background image style for cover */}
-                  <div
-                    className="col-span-2 bg-cover bg-center h-full min-h-[200px] md:min-h-[300px]"
-                    style={{
-                      backgroundImage: `url(${featuredPost.coverImage})`,
-                    }}
-                  />
+                  {/* Use video or image for cover */}
+                  <div className="col-span-2 bg-cover bg-center h-full min-h-[200px] md:min-h-[300px] flex items-center justify-center">
+                    {featuredPost.coverImage.endsWith('.mp4') ? (
+                      <video
+                        src={featuredPost.coverImage}
+                        className="w-full h-full object-cover"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                      />
+                    ) : (
+                      <div
+                        className="w-full h-full bg-cover bg-center"
+                        style={{ backgroundImage: `url(${featuredPost.coverImage})` }}
+                      />
+                    )}
+                  </div>
                   <div className="col-span-3 p-6">
                     <div className="flex flex-wrap gap-2 mb-3">
                       {featuredPost.tags.map((tag) => (
@@ -274,11 +285,24 @@ const Blog = () => {
                       className="block"
                     >
                       <div className="glass-card rounded-xl overflow-hidden transition-all hover:scale-[1.02] hover:bg-secondary/30 cursor-pointer h-full flex flex-col">
-                        {/* Use background image style for cover */}
-                        <div
-                          className="h-48 bg-cover bg-center"
-                          style={{ backgroundImage: `url(${post.coverImage})` }}
-                        />
+                        {/* Use video or image for cover */}
+                        <div className="h-48 bg-cover bg-center flex items-center justify-center">
+                          {post.coverImage.endsWith('.mp4') ? (
+                            <video
+                              src={post.coverImage}
+                              className="w-full h-full object-cover"
+                              autoPlay
+                              loop
+                              muted
+                              playsInline
+                            />
+                          ) : (
+                            <div
+                              className="w-full h-full bg-cover bg-center"
+                              style={{ backgroundImage: `url(${post.coverImage})` }}
+                            />
+                          )}
+                        </div>
                         <div className="p-5 flex flex-col flex-grow">
                           <div className="flex flex-wrap gap-2 mb-3">
                             {post.tags.map((tag) => (
